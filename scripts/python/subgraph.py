@@ -1,8 +1,5 @@
 from fifoqueue import *
 
-def bfs_numberer(self, start, number): # Numbers all the nodes in connected graph
-    pass
-
 def sub_graph_numberer(self): # Gives all the nodes in each subgraph a number specific to the subgraph
     i = 0
     for node in self.get_nodes(): # Need self.get_nodes()
@@ -15,9 +12,9 @@ def sub_graph_creater(self): # Takes a graph and returns a list of its connected
     l = []
     for i in range(1, self.get_number_of_subgraphs + 1): # Need self.get_number_of_subgraphs()
         l[i - 1] = GraphClass() # To be replaced
-        for node in self.get_nodes(): 
+        for node in self.get_nodes():
             if node.get_graph_number() == i:
-                l[i - 1].insert(node)
+                l[i - 1].insert(node) # Need self.insert(node)
                 self.remove(node) # Need self.remove()
     return l
 
