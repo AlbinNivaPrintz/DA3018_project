@@ -3,15 +3,16 @@ class graph:
     Main graph object.
     """
     def __init__(self):
-        self.nodes = {}
+        self._nodes = {}
+        self._number_of_subgraphs = None
 
-    def __create_node(self, name, length):
+    def create_node(self, name, length):
         """
         Creates a node object, and puts it in the graph
         :param name: Name of the node
         :param length: Length of the string represented by the node
         """
-        self.nodes[name] = node(name, length)
+        self._nodes[name] = node(name, length)
 
     def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, similarity: str, lengthA: int, lengthB: int):
         """
@@ -22,12 +23,32 @@ class graph:
         :param sectionB: match location in B
         :param similarity: match strength
         """
-        if not nodeB in self.nodes:
-            self.__create_node(nodeB, lengthB)
-        if not nodeA in self.nodes:
-            self.__create_node(nodeA, lengthA)
-        self.nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
-        self.nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
+        if not nodeB in self._nodes:
+            self.create_node(nodeB, lengthB)
+        if not nodeA in self._nodes:
+            self.create_node(nodeA, lengthA)
+        self._nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
+        self._nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
+
+    def remove(self, node):
+        """
+        Removes the node *node* from the graph
+        :param node: The node to be removed
+        """
+        neighbours = list(self._nodes[node].neighbours.keys())
+        self._nodes.pop(node)
+        for v in neighbours:
+            self._nodes[v].neighbours.pop(node)
+
+
+    def get_nodes(self):
+        return self._nodes
+
+    def set_number_of_subgraphs(self, number):
+        self._number_of_subgraphs = number
+        
+    def get_number_of_subgraphs(self):
+        return self._number_of_subgraphs
 
 
 class di_arc:
