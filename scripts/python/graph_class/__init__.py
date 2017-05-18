@@ -3,9 +3,15 @@ class graph:
     Main graph object.
     """
     def __init__(self):
-        self._arcs = {}
+        self.nodes = {}
 
-    def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, similarity: str):
+    def __str__(self):
+        return 'I exist!!'
+
+    def create_node(self, name, length):
+        self.nodes[name] = node(name, length)
+
+    def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, similarity: str, lengthA: int, lengthB: int):
         """
         Connects two nodes.
         :param nodeA: name of first node
@@ -14,19 +20,39 @@ class graph:
         :param sectionB: match location in B
         :param similarity: match strength
         """
-        if not nodeA in self._arcs:
-            self._arcs[nodeB] = {}
-        if not nodeA in self._arcs:
-            self._arcs[nodeA] = {}
-        self._arcs[nodeB][nodeA] = di_arc(nodeA, sectionB, sectionA, similarity)
-        self._arcs[nodeA][nodeB] = di_arc(nodeB, sectionA, sectionB, similarity)
+        if not nodeB in self.nodes:
+            self.create_node(nodeB, lengthB)
+        if not nodeA in self.nodes:
+            self.create_node(nodeA, lengthA)
+        self.nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
+        self.nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
+
 
 class di_arc:
     """
-    A directional arc object.
+    A directional arc class.
     """
-    def __init__(self, name, sectionSelf: tuple, sectionOther: tuple, similarity: str):
-        self.target = name
+    def __init__(self, sectionSelf: tuple, sectionOther: tuple, similarity: str):
         self.ownLocation = sectionSelf
         self.otherLocation = sectionOther
         self.similarity = similarity
+
+class node:
+    """
+    Node class.
+    """
+    def __init__(self, name, length):
+        self.name = name
+        self.neighbours = {}
+        self.length = length
+        self.color = None
+        self.graph_number = None
+
+    def insert(self, name, sectionSelf, sectionOther, similarity):
+        self.neighbours[name] = di_arc(sectionSelf, sectionOther, similarity)
+
+    def set_color(self, color):
+        self.color = color
+
+    def set_graph_number(self, number):
+        self.graph_number = number
