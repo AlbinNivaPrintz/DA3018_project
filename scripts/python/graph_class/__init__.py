@@ -5,10 +5,12 @@ class graph:
     def __init__(self):
         self.nodes = {}
 
-    def __str__(self):
-        return 'I exist!!'
-
-    def create_node(self, name, length):
+    def __create_node(self, name, length):
+        """
+        Creates a node object, and puts it in the graph
+        :param name: Name of the node
+        :param length: Length of the string represented by the node
+        """
         self.nodes[name] = node(name, length)
 
     def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, similarity: str, lengthA: int, lengthB: int):
@@ -21,9 +23,9 @@ class graph:
         :param similarity: match strength
         """
         if not nodeB in self.nodes:
-            self.create_node(nodeB, lengthB)
+            self.__create_node(nodeB, lengthB)
         if not nodeA in self.nodes:
-            self.create_node(nodeA, lengthA)
+            self.__create_node(nodeA, lengthA)
         self.nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
         self.nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
 
@@ -49,10 +51,25 @@ class node:
         self.graph_number = None
 
     def insert(self, name, sectionSelf, sectionOther, similarity):
+        """
+        Places a node in the neighbour set of this node.
+        :param name: Name of the neighbour
+        :param sectionSelf: Where in this node is the match occurring?
+        :param sectionOther: Where in the neighbour is the match occurring?
+        :param similarity: How strong is the match?
+        """
         self.neighbours[name] = di_arc(sectionSelf, sectionOther, similarity)
 
     def set_color(self, color):
+        """
+        Set the color of the node.
+        :param color: Color
+        """
         self.color = color
 
     def set_graph_number(self, number):
+        """
+        Specify which internal graph the node belongs to.
+        :param number: Internal graph number
+        """
         self.graph_number = number
