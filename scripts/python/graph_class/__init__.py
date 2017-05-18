@@ -1,4 +1,4 @@
-class graph:
+class Graph:
     """
     Main graph object.
     """
@@ -12,34 +12,36 @@ class graph:
         :param name: Name of the node
         :param length: Length of the string represented by the node
         """
-        self._nodes[name] = node(name, length)
+        self._nodes[name] = Node(name, length)
 
-    def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, similarity: str, lengthA: int, lengthB: int):
+    def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple, 
+                similarity: str, lengthA: int, lengthB: int):
         """
-        Connects two nodes.
-        :param nodeA: name of first node
-        :param sectionA: match location in A 
-        :param nodeB: name of second node
-        :param sectionB: match location in B
-        :param similarity: match strength
+        Connects two nodes in the graph. If any of them is not already in the graph, it creates them first.
+        :param nodeA: Name of the first node.
+        :param sectionA: Location of match in nodeA
+        :param nodeB: Name of second node.
+        :param sectionB: Location of match in nodeB
+        :param similarity: Strength of match
+        :param lengthA: Length of nodeA
+        :param lengthB: Length of nodeB
         """
-        if not nodeB in self._nodes:
+        if nodeB not in self._nodes:
             self.create_node(nodeB, lengthB)
-        if not nodeA in self._nodes:
+        if nodeA not in self._nodes:
             self.create_node(nodeA, lengthA)
         self._nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
         self._nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
 
-    def remove(self, node):
+    def remove(self, n):
         """
         Removes the node *node* from the graph
-        :param node: The node to be removed
+        :param n: The node to be removed
         """
-        neighbours = list(self._nodes[node].neighbours.keys())
-        self._nodes.pop(node)
+        neighbours = list(self._nodes[n].neighbours.keys())
+        self._nodes.pop(n)
         for v in neighbours:
-            self._nodes[v].neighbours.pop(node)
-
+            self._nodes[v].neighbours.pop(n)
 
     def get_nodes(self):
         return self._nodes
@@ -51,7 +53,7 @@ class graph:
         return self._number_of_subgraphs
 
 
-class di_arc:
+class DiArc:
     """
     A directional arc class.
     """
@@ -60,16 +62,17 @@ class di_arc:
         self.otherLocation = sectionOther
         self.similarity = similarity
 
-class node:
+
+class Node:
     """
     Node class.
     """
     def __init__(self, name, length):
-        self.name = name
-        self.neighbours = {}
+        self._name = name
+        self._neighbours = {}
         self.length = length
-        self.color = None
-        self.graph_number = None
+        self._color = None
+        self._graph_number = None
 
     def insert(self, name, sectionSelf, sectionOther, similarity):
         """
@@ -79,18 +82,42 @@ class node:
         :param sectionOther: Where in the neighbour is the match occurring?
         :param similarity: How strong is the match?
         """
-        self.neighbours[name] = di_arc(sectionSelf, sectionOther, similarity)
+        self._neighbours[name] = DiArc(sectionSelf, sectionOther, similarity)
+
+    def get_name(self):
+        return self._name
 
     def set_color(self, color):
         """
         Set the color of the node.
         :param color: Color
         """
-        self.color = color
+        self._color = color
+
+    def get_color(self):
+        """
+        Get the color of the node.
+        :return: Color of the node as string.
+        """
+        return self._color
 
     def set_graph_number(self, number):
         """
         Specify which internal graph the node belongs to.
         :param number: Internal graph number
         """
-        self.graph_number = number
+        self._graph_number = number
+        
+    def get_graph_number(self):
+        """
+        Number of which the node belongs to.
+        :return: The number of the graph the node belongs to.
+        """
+        return self._graph_number
+    
+    def get_neighbours(self):
+        """
+        Get the neighbour set of the node.
+        :return: The neighbour set as a dictionary.
+        """
+        return self._neighbours
