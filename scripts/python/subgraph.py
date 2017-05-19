@@ -3,7 +3,7 @@ from fifoqueue import *
 def sub_graph_numberer(self): # Gives all the nodes in each subgraph a number specific to the subgraph
     i = 0
     for node in self.get_nodes(): # Need self.get_nodes()
-        if  not node.get_graph_number(): # Need node.get_graph_number()
+        if not node.get_graph_number(): # Need node.get_graph_number()
             i += 1
             self.bfs_numberer(node, i)
     self.set_number_of_subgraphs(i) # Need self.set_number_of_subgraphs(i)
