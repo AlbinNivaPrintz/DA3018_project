@@ -14,11 +14,11 @@ def sub_graph_creater(self): # Takes a graph and returns a list of its connected
         l[i - 1] = Graph()
         for node in self.get_nodes():
             if node.get_graph_number() == i:
-                l[i - 1].insert(node) # Need self.insert(node)
+                l[i - 1].create_node(node, node.get_length(), node.get_neighbours())
                 self.remove(node)
     return l
 
-def bfs_numberer(self, start, number):
+def bfs_numberer(self, start, number): # Numbers the nodes in a connected graph with number
     undiscovered = []
     for node in self.get_nodes():
         undiscovered.append(node)
