@@ -27,5 +27,6 @@ def bfs_numberer(self, start, number):
         u = Q.dequeue()
         for v in u.get_edges(): # Need node.get_edges()
             if v.get_color() == "White": # Need node.get_color()
+                v.set_graph_number(number) # Need node.set_graph_number(number)
                 Q.enqueue(v)
         u.set_color("Black")
