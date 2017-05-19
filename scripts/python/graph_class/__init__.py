@@ -7,6 +7,35 @@ class Graph:
         self._nodes = {}
         self._number_of_subgraphs = None
 
+    @classmethod
+    def parse(cls, filename, n_lines = -1):
+        """
+        Creates a graph object from file
+        :param filename: name of the file where the graph is
+        :param n_lines: how many lines of the file do you want to read, optional
+        :return: graph object
+        """
+        G = Graph()
+        fileObject = open(filename, 'rb')
+        n = 0
+        for line in fileObject:
+            if n == n_lines:
+                break
+            print(n)
+            n += 1
+            l = line.split()
+            nodeA = l[0]
+            nodeB = l[1]
+            similarity = l[3]
+            matchA = (l[5], l[6])
+            lengthA = l[7]
+            matchB = (l[9], l[10])
+            lengthB = l[11]
+            G.connect(nodeA, matchA, lengthA,
+                      nodeB, matchB, lengthB,
+                      similarity)
+        return G
+
     def create_node(self, name, length, neighbours = None):
         """
         Creates a node object, and puts it in the graph
@@ -149,7 +178,7 @@ class Node:
     def __init__(self, name, length):
         self._name = name
         self._neighbours = {}
-        self.length = length
+        self._length = length
         self._color = None
         self._graph_number = None
 
@@ -165,6 +194,13 @@ class Node:
 
     def get_name(self):
         return self._name
+
+    def get_length(self):
+        """
+        Get the length of the node
+        :return: length of node as float
+        """
+        return self._length
 
     def set_color(self, color):
         """
