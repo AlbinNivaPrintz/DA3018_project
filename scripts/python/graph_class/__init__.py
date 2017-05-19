@@ -7,13 +7,16 @@ class Graph:
         self._nodes = {}
         self._number_of_subgraphs = None
 
-    def create_node(self, name, length):
+    def create_node(self, name, length, neighbours = None):
         """
         Creates a node object, and puts it in the graph
         :param name: Name of the node
         :param length: Length of the string represented by the node
+        :param neighbours: Optional neighbour set
         """
         self._nodes[name] = Node(name, length)
+        if neighbours:
+            self._nodes[name].set_neighbours(neighbours)
 
     def connect(self, nodeA: str, sectionA: tuple, lengthA: int,
                 nodeB: str, sectionB: tuple, lengthB: int, similarity: str):
@@ -135,7 +138,7 @@ class DiArc:
     def __init__(self, sectionSelf: tuple, sectionOther: tuple, similarity: str):
         self.ownLocation = sectionSelf
         self.otherLocation = sectionOther
-        self.similarity = similarity
+        self.similarity = float(similarity)
 
 
 class Node:
@@ -197,3 +200,13 @@ class Node:
         :return: The neighbour set as a dictionary.
         """
         return self._neighbours
+
+    def set_neighbours(self, neighbours: dict):
+        """
+        Manually creates a neighbour set for the node.
+        
+        Be certain the dict you're setting is on the right from.
+        
+        :param neighbours: the neighbour set
+        """
+        self._neighbours = neighbours
