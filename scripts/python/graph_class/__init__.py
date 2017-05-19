@@ -162,7 +162,7 @@ class Graph:
 
 class Arc:
     """
-    A directional arc class.
+    An arc class.
     """
 
     def __init__(self,nameA: str, sectionA: tuple, nameB: str, sectionB: tuple, similarity: str):
