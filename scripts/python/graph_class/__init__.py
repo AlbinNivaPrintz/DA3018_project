@@ -15,8 +15,8 @@ class Graph:
         """
         self._nodes[name] = Node(name, length)
 
-    def connect(self, nodeA: str, sectionA: tuple, nodeB: str, sectionB: tuple,
-                similarity: str, lengthA: int, lengthB: int):
+    def connect(self, nodeA: str, sectionA: tuple, lengthA: int,
+                nodeB: str, sectionB: tuple, lengthB: int, similarity: str):
         """
         Connects two nodes in the graph. If any of them is not already in the graph, it creates them first.
         :param nodeA: Name of the first node.
