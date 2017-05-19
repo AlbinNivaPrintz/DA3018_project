@@ -63,8 +63,9 @@ class Graph:
             self.create_node(nodeB, lengthB)
         if nodeA not in self._nodes:
             self.create_node(nodeA, lengthA)
-        self._nodes[nodeB].insert(nodeA, sectionB, sectionA, similarity)
-        self._nodes[nodeA].insert(nodeB, sectionA, sectionB, similarity)
+        arc = Arc(nodeA,sectionA,nodeB,sectionB,similarity)
+        self._nodes[nodeB].insert(nodeA, arc)
+        self._nodes[nodeA].insert(nodeB, arc)
 
     def remove(self, n):
         """
@@ -159,14 +160,13 @@ class Graph:
         return distinct
 
 
-class DiArc:
+class Arc:
     """
     A directional arc class.
     """
 
-    def __init__(self, sectionSelf: tuple, sectionOther: tuple, similarity: str):
-        self.ownLocation = sectionSelf
-        self.otherLocation = sectionOther
+    def __init__(self,nameA: str, sectionA: tuple, nameB: str, sectionB: tuple, similarity: str):
+        self.nodes = {nameA: sectionA, nameB: sectionB}
         self.similarity = float(similarity)
 
 
@@ -182,7 +182,7 @@ class Node:
         self._color = None
         self._graph_number = None
 
-    def insert(self, name, sectionSelf, sectionOther, similarity):
+    def insert(self, name, arc):
         """
         Places a node in the neighbour set of this node.
         :param name: Name of the neighbour
@@ -190,7 +190,7 @@ class Node:
         :param sectionOther: Where in the neighbour is the match occurring?
         :param similarity: How strong is the match?
         """
-        self._neighbours[name] = DiArc(sectionSelf, sectionOther, similarity)
+        self._neighbours[name] = arc
 
     def get_name(self):
         return self._name
@@ -246,3 +246,6 @@ class Node:
         :param neighbours: the neighbour set
         """
         self._neighbours = neighbours
+
+    def set_a_neighbour(self, name, arc):
+        self._neighbours[name] = arc
