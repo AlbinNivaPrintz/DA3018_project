@@ -1,1 +1,31 @@
 2017-05-17:
+
+Vi satt tillsammans och tänkte på hur vi skulle angripa problemet. Vi kom fram
+till att vi väljer att representera contigerna och deras överlappningar som en
+graf, samt att vi ska försöka lösa uppgiften genom att dela upp grafen i dess
+sammanhängande delgrafer. Från dessa delgrafer ska vi sedan ta bort de noder
+(contiger) som har många grannar (hur många vet vi inte än), och återigen dela
+upp i sammanhängande delgrafer. Dessa delgrafer skulle då bli vår utdata. Vi
+skrev kod som undersökte hur många gånger varje contig dök upp i indata-filen,
+och skapade ett histogram för att få en överblick. Histogrammet visade att de
+flesta contiger hade få (<10) överlappningar, vilket inte var vad vi hade
+räknat med, men vi tror ändå att vår metod kan ge resultat.
+
+2017-05-18:
+
+Jag skrev kod som med hjälp av bfs märker alla noder i en sammanhängande
+delgraf med en siffra, och annan kod som med hjälp av detta delar upp en graf i
+en lista av delgrafer. Jag la upp koden på vårt gemensamma repo så att Albin (som
+skapade klasserna) kunde se till att klassmetoderna som behövdes blev
+implementerade, och vi hjälptes åt att se till så att allt samspelade.
+
+2018-05-19:
+
+Skrev en funktion som med hjälp av bfs går igenom alla noder i en sammanhängande
+graf och lägger alla noder med fler än ett visst antal grannar i en lista, och
+sedan tar bort alla noderna i den listan från grafen. På samma sätt som dagen
+innan såg vi till att all kod samspelade. Skrev ett bash-script som undersökte
+hur många överlappningar som hade under 0.99 i matchningsratio och såg att det
+var 19618771 stycken, alltså lite mindre än en tredjedel. Vi tänker att vi
+kanske kan använda oss av det om vår metod inte rensar bort tillräckligt många
+contiger.
