@@ -8,8 +8,9 @@ class Graph:
         self._number_of_subgraphs = None
 
     @classmethod
-    def parse(cls, filename, n_lines = -1):
+    def parse(cls, filename, n_lines=-1):
         """
+        
         Creates a graph object from file
         :param filename: name of the file where the graph is
         :param n_lines: how many lines of the file do you want to read, optional
@@ -21,7 +22,8 @@ class Graph:
         for line in fileObject:
             if n == n_lines:
                 break
-            print(n)
+            if not n % 1000000:
+                print(n)
             n += 1
             l = line.split()
             nodeA = l[0]
@@ -35,6 +37,12 @@ class Graph:
                       nodeB, matchB, lengthB,
                       similarity)
         return G
+
+    def create_m4(self):
+        """
+        Write the graph to a m4 file 
+        """
+        pass
 
     def create_node(self, name, length, neighbours = None):
         """
@@ -72,10 +80,10 @@ class Graph:
         Removes the node *node* from the graph
         :param n: The node to be removed
         """
-        neighbours = list(self._nodes[n].neighbours.keys())
+        neighbour_list = list(self._nodes[n].get_neighbours().keys())
         self._nodes.pop(n)
-        for v in neighbours:
-            self._nodes[v].neighbours.pop(n)
+        for v in neighbour_list:
+            self._nodes[v].remove_a_neighbour(n)
 
     def get_nodes(self):
         return self._nodes
@@ -249,3 +257,6 @@ class Node:
 
     def set_a_neighbour(self, name, arc):
         self._neighbours[name] = arc
+
+    def remove_a_neighbour(self, name):
+        self._neighbours.pop(name)
