@@ -1,16 +1,10 @@
-from fifoqueue import *
-
 class Graph:
-    """
-    Main graph object.
-    """
-
     def __init__(self):
         self._nodes = {}
         self._number_of_subgraphs = None
 
     @classmethod
-    def parse(cls, filename, n_lines=-1):
+    def parse(cls, filename: str, n_lines=-1):
         """
 
         Creates a graph object from file
@@ -19,7 +13,7 @@ class Graph:
         :return: graph object
         """
         G = Graph()
-        fileObject = open(filename, 'rb')
+        fileObject = open(filename, 'r')
         n = 0
         for line in fileObject:
             if n == n_lines:
@@ -27,26 +21,20 @@ class Graph:
             if not n % 1000000:
                 print(n)
             n += 1
-            l = line.split()
-            nodeA = l[0]
-            nodeB = l[1]
-            similarity = l[3]
-            matchA = (l[5], l[6])
-            lengthA = l[7]
-            matchB = (l[9], l[10])
-            lengthB = l[11]
+            out = line.split()
+            nodeA = out[0]
+            nodeB = out[1]
+            similarity = out[3]
+            matchA = (out[5], out[6])
+            lengthA = int(out[7])
+            matchB = (out[9], out[10])
+            lengthB = int(out[11])
             G.connect(nodeA, matchA, lengthA,
                       nodeB, matchB, lengthB,
                       similarity)
         return G
 
-    def create_m4(self):
-        """
-        Write the graph to a m4 file
-        """
-        pass
-
-    def create_node(self, name, length, neighbours = None):
+    def create_node(self, name: str, length: int, neighbours=None):
         """
         Creates a node object, and puts it in the graph
         :param name: Name of the node
@@ -73,11 +61,11 @@ class Graph:
             self.create_node(nodeB, lengthB)
         if nodeA not in self._nodes:
             self.create_node(nodeA, lengthA)
-        arc = Arc(nodeA,sectionA,nodeB,sectionB,similarity)
+        arc = Arc(nodeA, sectionA, nodeB, sectionB, similarity)
         self._nodes[nodeB].insert(nodeA, arc)
         self._nodes[nodeA].insert(nodeB, arc)
 
-    def remove(self, n):
+    def remove(self, n: str):
         """
         Removes the node *node* from the graph
         :param n: The node to be removed
@@ -90,13 +78,13 @@ class Graph:
     def get_nodes(self):
         return self._nodes
 
-    def set_number_of_subgraphs(self, number):
+    def set_number_of_subgraphs(self, number: int):
         self._number_of_subgraphs = number
 
-    def get_number_of_subgraphs(self):
+    def get_number_of_subgraphs(self) -> int:
         return self._number_of_subgraphs
 
-    def distance(self, start):
+    def distance(self, start: str):
         """
         Calculates distance from the node start to all other nodes in the graph.
         In the returned dictionary, start node gets a distance of zero,
@@ -117,13 +105,13 @@ class Graph:
         while not q.empty():
             v = q.get()
             dist_so_far = dist_dict[v] + 1
-            for u in self._nodes[v]:
+            for u in self._nodes[v].get_neighbours():
                 if dist_dict[u] == infty:
                     q.put(u)
                     dist_dict[u] = dist_so_far
         return dist_dict
 
-    def save_to_file(self, directory):
+    def save_to_file(self, directory: str):
         """
         Uses pickle to save nodes and arcs to a file.
         :param directory: Save directory.
@@ -133,7 +121,7 @@ class Graph:
         pickle.dump(self._nodes, fileObject)
         fileObject.close()
 
-    def load_from_file(self, directory):
+    def load_from_file(self, directory: str):
         """
         Uses pickle to load nodes and arcs from a file.
         :param directory: Load directory.
@@ -180,7 +168,7 @@ class Graph:
     #             self.bfs_numberer(node, i, undiscovered)
     #     self.set_number_of_subgraphs(i)
 
-    def sub_graph_numberer(self): # Gives all the nodes in each subgraph a number specific to the subgraph
+    def sub_graph_numberer(self):  # Gives all the nodes in each subgraph a number specific to the subgraph
         undiscovered = []
         for node in self.get_nodes().keys():
             undiscovered.append(node)
@@ -202,7 +190,7 @@ class Graph:
     #                 self.remove(node)
     #     return l
 
-    def sub_graph_creater(self): # Takes a graph and returns a list of its connected subgraphs
+    def sub_graph_creater(self):  # Takes a graph and returns a list of its connected subgraphs
         l = []
         for i in range(1, self.get_number_of_subgraphs() + 1):
             # print(i) # Remove!
@@ -227,52 +215,57 @@ class Graph:
     #                 v.set_graph_number(number)
     #                 Q.enqueue(v)
 
-    def bfs_numberer(self, start, number, undiscovered): # Numbers the nodes in a connected graph with number
+    def bfs_numberer(self, start: str, number: int, undiscovered: list):
+        # Numbers the nodes in a connected graph with number
+        import queue as q
         undiscovered.remove(self.get_nodes()[start].get_name())
         self.get_nodes()[start].set_graph_number(number)
-        Q = fifoqueue(len(self.get_nodes()))
-        Q.enqueue(start)
-        while Q.len > 0:
-            u = Q.dequeue()
+        Q = q.Queue(len(self.get_nodes()))
+        Q.put(start)
+        while not Q.empty() > 0:
+            u = Q.get()
             for v in list(self.get_nodes()[u].get_neighbours().keys()):
                 if v in undiscovered:
                     undiscovered.remove(v)
                     self.get_nodes()[v].set_graph_number(number)
-                    Q.enqueue(v)
+                    Q.put(v)
 
-    def social_node_remover(self, start, no_neighbours): # Removes nodes with number of neighbours equal to or more than no_neighbours
+    def social_node_remover(self, start: Node, no_neighbours: int):
+        # Removes nodes with number of neighbours equal to or more than no_neighbours
+        import queue as q
 
-        def social_node_lister(self, start, no_neighbours): # Lists nodes with number of neighbours equal to or more than no_neighbours
-
+        def social_node_lister(self: Graph, start: Node, no_neighbours: int):
+            # Lists nodes with number of neighbours equal to or more than no_neighbours
             social_nodes = []
             undiscovered = []
             for node in self.get_nodes():
                 undiscovered.append(node)
             if len(start.get_neighbours()) >= no_neighbours:
                 social_nodes.append(start)
-            undiscovered.pop(start)
-            Q = fifoqueue(len(self.get_nodes()))
-            Q.enqueue(start)
-            while Q.len > 0:
-                u = Q.dequeue()
+            undiscovered.remove(start)
+            Q = q.Queue(len(self.get_nodes()))
+            Q.put(start)
+            while not Q.empty() > 0:
+                u = Q.get()
                 for v in u.get_neighbours():
                     if v in undiscovered:
                         undiscovered.pop(v)
                         if len(v.get_neighbours()) >= no_neighbours:
                             social_nodes.append(v)
-                        Q.enqueue(v)
+                        Q.put(v)
             return social_nodes
 
         social_nodes = social_node_lister(self, start, no_neighbours)
         for node in social_nodes:
             self.remove(node)
 
+
 class Arc:
     """
     An arc class.
     """
 
-    def __init__(self,nameA: str, sectionA: tuple, nameB: str, sectionB: tuple, similarity: str):
+    def __init__(self, nameA: str, sectionA: tuple, nameB: str, sectionB: tuple, similarity: str):
         self.nodes = {nameA: sectionA, nameB: sectionB}
         self.similarity = float(similarity)
 
@@ -293,9 +286,7 @@ class Node:
         """
         Places a node in the neighbour set of this node.
         :param name: Name of the neighbour
-        :param sectionSelf: Where in this node is the match occurring?
-        :param sectionOther: Where in the neighbour is the match occurring?
-        :param similarity: How strong is the match?
+        :param arc: The  arc object that connects the two nodes
         """
         self._neighbours[name] = arc
 
