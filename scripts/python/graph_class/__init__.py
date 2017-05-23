@@ -230,11 +230,11 @@ class Graph:
                     self.get_nodes()[v].set_graph_number(number)
                     Q.put(v)
 
-    def social_node_remover(self, start: Node, no_neighbours: int):
+    def social_node_remover(self, start, no_neighbours: int):
         # Removes nodes with number of neighbours equal to or more than no_neighbours
         import queue as q
 
-        def social_node_lister(self: Graph, start: Node, no_neighbours: int):
+        def social_node_lister(self: Graph, start, no_neighbours: int):
             # Lists nodes with number of neighbours equal to or more than no_neighbours
             social_nodes = []
             undiscovered = []
@@ -275,14 +275,14 @@ class Node:
     Node class.
     """
 
-    def __init__(self, name, length):
+    def __init__(self, name: str, length: int):
         self._name = name
         self._neighbours = {}
         self._length = length
         self._color = None
         self._graph_number = None
 
-    def insert(self, name, arc):
+    def insert(self, name: str, arc):
         """
         Places a node in the neighbour set of this node.
         :param name: Name of the neighbour
@@ -300,7 +300,7 @@ class Node:
         """
         return self._length
 
-    def set_color(self, color):
+    def set_color(self, color: str):
         """
         Set the color of the node.
         :param color: Color
@@ -314,7 +314,7 @@ class Node:
         """
         return self._color
 
-    def set_graph_number(self, number):
+    def set_graph_number(self, number: int):
         """
         Specify which internal graph the node belongs to.
         :param number: Internal graph number
@@ -345,10 +345,10 @@ class Node:
         """
         self._neighbours = neighbours
 
-    def set_a_neighbour(self, name, arc):
+    def set_a_neighbour(self, name: str, arc):
         self._neighbours[name] = arc
 
-    def remove_a_neighbour(self, name):
+    def remove_a_neighbour(self, name: str):
         self._neighbours.pop(name)
 
 if __name__ == '__main__':
