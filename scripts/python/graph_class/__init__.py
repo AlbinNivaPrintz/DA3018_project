@@ -3,6 +3,12 @@ class Graph:
         self._nodes = {}
         self._number_of_subgraphs = None
 
+    def __str__(self):
+        out = ""
+        for node in self._nodes:
+            out += node
+        return out
+
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
         """
