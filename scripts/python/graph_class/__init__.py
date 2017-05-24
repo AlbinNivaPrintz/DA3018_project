@@ -1,4 +1,4 @@
-import queue as Q
+from collections import deque
 
 class Graph:
     def __init__(self):
@@ -99,15 +99,15 @@ class Graph:
         :return: The connected subgraph in self containing start.
         """
         new_G = Graph()
-        q = Q.Queue()
-        q.put(start)
+        q = deque()
+        q.append(start)
         disc_dict[start] = 1
         new_G.create_node(start, neighbours=self._nodes[start])
-        while not q.empty():
-            v = q.get()
+        while len(q) > 0:
+            v = q.popleft()
             for u in self._nodes[v]:
                 if u in disc_dict:
-                    q.put(u)
+                    q.append(u)
                     disc_dict.pop(u)
                     new_G.create_node(u, neighbours=self._nodes[u])
         return new_G, disc_dict
@@ -120,7 +120,7 @@ class Graph:
         Also updates the attribute self.number_of_subgraphs.
         :return: A list with all the connected subgrahs of self.
         """
-        csg = Q.Queue()
+        csg = deque()
         c = 0
         disc_dict = {}
         for node in self._nodes:
@@ -134,7 +134,7 @@ class Graph:
                     self.remove(i)
                 self.remove(k)
                 break
-            csg.put(new_G)
+            csg.append(new_G)
             c += 1
         return csg
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
 
     res=open('../../results/Result.txt','w')
     while not l.empty():
-        res.write(str(l.get())+'\n')
+        res.write(str(l.popleft())+'\n')
     res.close()
 
 
