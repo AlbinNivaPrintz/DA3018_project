@@ -48,13 +48,6 @@ class TestGraphMethods(unittest.TestCase):
         self.assertNotIn('A', self.test_graph.get_nodes())
         self.assertNotIn('A', self.test_graph.get_neighbours('B'))
 
-    def test_distance(self):
-        import math
-        dist = self.test_graph.distance('A')
-        self.assertEqual(dist['A'], 0)
-        self.assertEqual(dist['C'], 2)
-        self.assertEqual(dist['D'], math.inf)
-
 
 if __name__ == '__main__':
     unittest.main()
