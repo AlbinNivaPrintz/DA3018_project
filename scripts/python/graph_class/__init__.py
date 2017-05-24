@@ -90,7 +90,7 @@ class Graph:
     def get_number_of_subgraphs(self) -> int:
         return self._number_of_subgraphs
 
-    def get_sub_graph(self, start: str):
+    def get_sub_graph(self, start: str, disc_dict):
         """
         Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
@@ -98,9 +98,6 @@ class Graph:
         """
         import queue
         new_G = Graph()
-        disc_dict = {}
-        for node in self._nodes:
-            disc_dict[node] = 0
         q = queue.Queue()
         q.put(start)
         disc_dict[start] = 1
@@ -112,7 +109,7 @@ class Graph:
                     q.put(u)
                     disc_dict[u] = 1
                     new_G.create_node(u, neighbours=self._nodes[u])
-        return new_G
+        return new_G, disc_dict
 
 
     def csg_ify(self):
@@ -124,9 +121,12 @@ class Graph:
         """
         csg = []
         c = 0
+        disc_dict = {}
+        for node in self._nodes:
+            disc_dict[node] = 0
         while len(self._nodes) > 0:
             for k in self._nodes:
-                new_G = self.get_sub_graph(k)
+                new_G, disc_dict = self.get_sub_graph(k, disc_dict)
                 if not c % 100:
                     print(len(self._nodes), 'left to check.')
                 for i in new_G.get_nodes():
