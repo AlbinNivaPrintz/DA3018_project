@@ -4,10 +4,13 @@ class Graph:
         self._number_of_subgraphs = None
 
     def __str__(self):
-        out = ""
+        out = str(len(self)) + "\t"
         for node in self._nodes:
             out += node + "\t"
         return out
+
+    def __len__(self):
+        return len(list(self._nodes.values()))
 
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
