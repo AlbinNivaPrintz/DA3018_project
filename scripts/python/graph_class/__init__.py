@@ -6,7 +6,7 @@ class Graph:
     def __str__(self):
         out = ""
         for node in self._nodes:
-            out += node
+            out += node + "\t"
         return out
 
     @classmethod
