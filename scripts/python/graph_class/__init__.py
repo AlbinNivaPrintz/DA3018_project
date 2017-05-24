@@ -110,6 +110,7 @@ class Graph:
                     new_G.create_node(u, neighbours=self._nodes[u])
         return new_G
 
+
     def csg_ify(self):
         """
         This method will destroy the graph.
@@ -185,15 +186,21 @@ class Graph:
 
 if __name__ == '__main__':
 
+    import sys
+
     from time import time
 
     start_1 = time()
 
-    g = Graph.parse('Spruce_fingerprint_2017-03-10_16.48.olp.m4', 10**4)
+    print('Initializing parsing...')
+
+    g = Graph.parse(sys.argv[1], 10**4)
 
     end_1 = time()
 
-    print('Parsing took {} seconds'.format(end_1 - start_1))
+    print('Parsing complete and took {} seconds'.format(end_1 - start_1))
+
+    print('Creating subgraphs...')
 
     start_3 = time()
 
@@ -201,4 +208,20 @@ if __name__ == '__main__':
 
     end_3 = time()
 
-    print('Creating new subgraphs took {} seconds'.format(end_3 - start_3))
+    print('Subgraphs created. It took {} seconds'.format(end_3 - start_3))
+
+    print('Creating resultfile...')
+
+    start_4 = time()
+
+    res=open('../../../results/Result.txt','w+')
+    for graph in l:
+        res.write(str(graph))
+    res.close()
+
+
+    end_4 = time()
+
+    print('Creating the result file took {} seconds'.format(end_4 - start_4))
+
+    print('Finished.')
