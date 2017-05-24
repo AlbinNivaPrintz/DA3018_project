@@ -74,8 +74,9 @@ class Graph:
         if n in self._nodes:
             neighbour_list = self._nodes.pop(n)
             for v in neighbour_list:
-                if n in self._nodes[v]:
-                    self._nodes[v].remove(n)
+                if v in self._nodes:
+                    if n in self._nodes[v]:
+                        self._nodes[v].remove(n)
 
     def get_nodes(self) -> dict:
         return self._nodes
@@ -197,7 +198,7 @@ if __name__ == '__main__':
 
     print('Initializing parsing...')
 
-    g = Graph.parse(sys.argv[1], 10**4)
+    g = Graph.parse(sys.argv[1])
 
     end_1 = time()
 
