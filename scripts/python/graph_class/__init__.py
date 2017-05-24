@@ -64,7 +64,8 @@ class Graph:
         """
         neighbour_list = self._nodes.pop(n)
         for v in neighbour_list:
-            self._nodes[v].remove(n)
+            if n in self._nodes[v]:
+                self._nodes[v].remove(n)
 
     def get_nodes(self) -> dict:
         return self._nodes
