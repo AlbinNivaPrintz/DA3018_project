@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     print('Initializing parsing...')
 
-    g = Graph.parse(sys.argv[1], 1000)
+    g = Graph.parse(sys.argv[1])
 
     end_1 = time()
 
@@ -219,9 +219,9 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    res=open('../../../results/Result.txt','w')
+    res=open('../../results/Result.txt','w')
     while not l.empty():
-        res.write(l.get())
+        res.write(str(l.get())+'\n')
     res.close()
 
 
