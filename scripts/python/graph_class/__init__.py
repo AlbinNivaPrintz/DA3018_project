@@ -99,14 +99,14 @@ class Graph:
         :return: The connected subgraph in self containing start.
         """
         new_G = Graph()
-        q = queue.Queue()
+        q = Q.Queue()
         q.put(start)
         disc_dict[start] = 1
         new_G.create_node(start, neighbours=self._nodes[start])
         while not q.empty():
             v = q.get()
             for u in self._nodes[v]:
-                if disc_dict[u]:
+                if u in disc_dict:
                     q.put(u)
                     disc_dict.pop(u)
                     new_G.create_node(u, neighbours=self._nodes[u])
@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     print('Initializing parsing...')
 
-    g = Graph.parse(sys.argv[1])
+    g = Graph.parse(sys.argv[1], 1000)
 
     end_1 = time()
 
