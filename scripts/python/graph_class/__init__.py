@@ -105,9 +105,9 @@ class Graph:
         while not q.empty():
             v = q.get()
             for u in self._nodes[v]:
-                if disc_dict[u] == 0:
+                if disc_dict[u]:
                     q.put(u)
-                    disc_dict[u] = 1
+                    disc_dict.pop(u)
                     new_G.create_node(u, neighbours=self._nodes[u])
         return new_G, disc_dict
 
@@ -123,7 +123,7 @@ class Graph:
         c = 0
         disc_dict = {}
         for node in self._nodes:
-            disc_dict[node] = 0
+            disc_dict[node] = 1
         while len(self._nodes) > 0:
             for k in self._nodes:
                 new_G, disc_dict = self.get_sub_graph(k, disc_dict)
