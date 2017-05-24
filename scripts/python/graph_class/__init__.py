@@ -127,7 +127,7 @@ class Graph:
         while len(self._nodes) > 0:
             for k in self._nodes:
                 new_G, disc_dict = self.get_sub_graph(k, disc_dict)
-                if not c % 10000:
+                if not c % 100000:
                     print(len(self._nodes), 'left to check.')
                 for i in new_G.get_nodes():
                     self.remove(i)
