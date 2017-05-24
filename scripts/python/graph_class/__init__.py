@@ -80,11 +80,9 @@ class Graph:
 
     def get_sub_graph(self, start: str):
         """
-        Calculates distance from the node start to all other nodes in the graph.
-        In the returned dictionary, start node gets a distance of zero,
-        and nodes not connected to the start node gets math.inf.
+        Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
-        :return: A dictionary like {'node': distance to start, ...}.
+        :return: The connected subgraph in self containing start.
         """
         import queue
         new_G = Graph()
@@ -109,7 +107,7 @@ class Graph:
         This method will destroy the graph.
         Calculates the number of different connected sub graphs is the graph.
         Also updates the attribute self.number_of_subgraphs.
-        :return: a list containing one node from each connected sub graph.
+        :return: A list with all the connected subgrahs of self.
         """
         csg = []
         c = 0
