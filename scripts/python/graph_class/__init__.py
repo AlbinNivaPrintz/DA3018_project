@@ -1,3 +1,5 @@
+import queue as Q
+
 class Graph:
     def __init__(self):
         self._nodes = {}
@@ -96,7 +98,6 @@ class Graph:
         :param start: The node from which to calculate distances.
         :return: The connected subgraph in self containing start.
         """
-        import queue
         new_G = Graph()
         q = queue.Queue()
         q.put(start)
@@ -119,7 +120,7 @@ class Graph:
         Also updates the attribute self.number_of_subgraphs.
         :return: A list with all the connected subgrahs of self.
         """
-        csg = []
+        csg = Q.Queue()
         c = 0
         disc_dict = {}
         for node in self._nodes:
@@ -133,7 +134,7 @@ class Graph:
                     self.remove(i)
                 self.remove(k)
                 break
-            csg.append(new_G)
+            csg.put(new_G)
             c += 1
         return csg
 
@@ -218,9 +219,9 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    res=open('../../../results/Result.txt','w+')
-    for graph in l:
-        res.write(str(graph))
+    res=open('../../../results/Result.txt','w')
+    while not l.empty():
+        res.write(l.get())
     res.close()
 
 
