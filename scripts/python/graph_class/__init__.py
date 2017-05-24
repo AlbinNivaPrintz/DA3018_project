@@ -55,9 +55,9 @@ class Graph:
         :param nodeB: Name of second node.
         """
         if nodeB not in self._nodes:
-            self.create_node(nodeB)
+            self._nodes[nodeB] = [nodeA]
         if nodeA not in self._nodes:
-            self.create_node(nodeA)
+            self._nodes[nodeA] = [nodeB]
         if nodeA not in self._nodes[nodeB]:
             self._nodes[nodeB].append(nodeA)
         if nodeB not in self._nodes[nodeA]:
@@ -68,9 +68,9 @@ class Graph:
         Removes the node *node* from the graph
         :param n: The node to be removed
         """
-        neighbour_list = self._nodes.pop(n)
-        for v in neighbour_list:
-            if v in self._nodes:
+        if n in self._nodes:
+            neighbour_list = self._nodes.pop(n)
+            for v in neighbour_list:
                 if n in self._nodes[v]:
                     self._nodes[v].remove(n)
 
