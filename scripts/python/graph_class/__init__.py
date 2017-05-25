@@ -96,13 +96,12 @@ class Graph:
         """
         Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
-	:param disc_dict: A dictionary with all the nodes not already discovered in the tree.
+        :param disc_dict: A dictionary with all the nodes not already discovered in the tree.
         :return: The connected subgraph in self containing start.
         """
         new_deq = deque()
         q = deque()
         q.append(start)
-        disc_dict.pop(start)
         new_deq.append(start)
         while len(q) > 0:
             v = q.popleft()
@@ -112,7 +111,6 @@ class Graph:
                     disc_dict.pop(u)
                     new_deq.append(u)
         return new_deq, disc_dict
-
 
     def csg_ify(self):
         """
@@ -127,16 +125,15 @@ class Graph:
         for node in self._nodes:
             disc_dict[node] = 1
         while len(self._nodes) > 0:
-            for k in self._nodes:
-                if not c & 100000:
-                    print(len(self._nodes), "left to check.")
-                new_deq, disc_dict = self.get_sub_graph(k, disc_dict)
-                new_str = str(len(new_deq))
-                while new_deq:
-                    node = new_deq.popleft()
-                    new_str += "\t" + node
-                    self.remove(node)
-                break
+            nodename, x = disc_dict.popitem()
+            if not c % 100000:
+                print(len(self._nodes), "left to check.")
+            new_deq, disc_dict = self.get_sub_graph(nodename, disc_dict)
+            new_str = str(len(new_deq))
+            while new_deq:
+                node = new_deq.popleft()
+                new_str += "\t" + node
+                self.remove(node)
             csg.append(new_str)
             c += 1
         return csg
@@ -162,7 +159,6 @@ class Graph:
         fileObject.close()
 
     def social_node_remover(self, start, no_neighbours: int):
-        # OLD
         # Removes nodes with number of neighbours equal to or more than no_neighbours
         import queue as q
 
@@ -222,10 +218,9 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    res=open('../../results/Result.txt','w+')
-    while l:
-        res.write(l.popleft()+'\n')
-    res.close()
+    with open('../../results/Result.txt','w+') as res:
+        while l:
+            res.write(l.popleft()+'\n')
 
 
     end_4 = time()
