@@ -96,6 +96,7 @@ class Graph:
         """
         Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
+	:param disc_dict: A dictionary with all the nodes not already discovered in the tree.
         :return: The connected subgraph in self containing start.
         """
         new_deq = deque()
@@ -121,21 +122,20 @@ class Graph:
         :return: A list with all the connected subgrahs of self.
         """
         csg = deque()
-        c = 0
         disc_dict = {}
+        c = 0
         for node in self._nodes:
             disc_dict[node] = 1
         while len(self._nodes) > 0:
             for k in self._nodes:
+                if not c & 100000:
+                    print(len(self._nodes), "left to check.")
                 new_deq, disc_dict = self.get_sub_graph(k, disc_dict)
-                if not c % 10000:
-                    print(len(self._nodes), 'left to check.')
                 new_str = str(len(new_deq))
                 while new_deq:
                     node = new_deq.popleft()
                     new_str += "\t" + node
                     self.remove(node)
-                self.remove(k)
                 break
             csg.append(new_str)
             c += 1
