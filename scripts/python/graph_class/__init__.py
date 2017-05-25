@@ -92,25 +92,25 @@ class Graph:
     def get_number_of_subgraphs(self) -> int:
         return self._number_of_subgraphs
 
-    def get_sub_graph(self, start: str, disc_dict):
+    def get_sub_graph(self, start: str, disc_dict) -> tuple:
         """
         Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
         :return: The connected subgraph in self containing start.
         """
-        new_G = Graph()
+        new_deq = deque()
         q = deque()
         q.append(start)
-        disc_dict[start] = 1
-        new_G.create_node(start, neighbours=self._nodes[start])
+        disc_dict.pop(start)
+        new_deq.append(start)
         while len(q) > 0:
             v = q.popleft()
             for u in self._nodes[v]:
                 if u in disc_dict:
                     q.append(u)
                     disc_dict.pop(u)
-                    new_G.create_node(u, neighbours=self._nodes[u])
-        return new_G, disc_dict
+                    new_deq.append(u)
+        return new_deq, disc_dict
 
 
     def csg_ify(self):
@@ -127,14 +127,17 @@ class Graph:
             disc_dict[node] = 1
         while len(self._nodes) > 0:
             for k in self._nodes:
-                new_G, disc_dict = self.get_sub_graph(k, disc_dict)
+                new_deq, disc_dict = self.get_sub_graph(k, disc_dict)
                 if not c % 10000:
                     print(len(self._nodes), 'left to check.')
-                for i in new_G.get_nodes():
-                    self.remove(i)
+                new_str = str(len(new_deq))
+                while new_deq:
+                    node = new_deq.popleft()
+                    new_str += "\t" + node
+                    self.remove(node)
                 self.remove(k)
                 break
-            csg.append(new_G)
+            csg.append(new_str)
             c += 1
         return csg
 
@@ -219,9 +222,9 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    res=open('../../results/Result.txt','w')
-    while not l.empty():
-        res.write(str(l.popleft())+'\n')
+    res=open('../../results/Result.txt','w+')
+    while l:
+        res.write(l.popleft()+'\n')
     res.close()
 
 
