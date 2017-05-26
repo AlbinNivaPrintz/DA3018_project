@@ -2,6 +2,10 @@ from collections import deque
 
 
 class Graph:
+    """
+    A simple graph class, designed for dividing a 
+    graph class into its connected sub graphs and printing the output.
+    """
     def __init__(self):
         self._nodes = {}
 
@@ -14,8 +18,15 @@ class Graph:
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
         """
-        Creates a graph object from file
-        :param filename: name of the file where the graph is
+        Creates a graph object from file.
+        Each line in the file should contain a node pair,
+        representing an arc in the graph. Example:
+        
+        node1   node2
+        node3   node4
+        ...
+        
+        :param filename: path to the input file.
         :param n_lines: how many lines of the file do you want to read, optional
         :return: graph object
         """
@@ -37,7 +48,7 @@ class Graph:
 
     def create_node(self, name: str, neighbours=None):
         """
-        Creates a node object, and puts it in the graph
+        Creates a node, and puts it in the graph.
         :param name: Name of the node
         :param neighbours: Optional list of the neighbours
         """
@@ -58,16 +69,18 @@ class Graph:
         """
         if nodeB not in self._nodes:
             self._nodes[nodeB] = [nodeA]
+        else:
+            if nodeA not in self._nodes[nodeB]:
+                self._nodes[nodeB].append(nodeA)
         if nodeA not in self._nodes:
             self._nodes[nodeA] = [nodeB]
-        if nodeA not in self._nodes[nodeB]:
-            self._nodes[nodeB].append(nodeA)
-        if nodeB not in self._nodes[nodeA]:
-            self._nodes[nodeA].append(nodeB)
+        else:
+            if nodeB not in self._nodes[nodeA]:
+                self._nodes[nodeA].append(nodeB)
 
     def remove(self, n: str):
         """
-        Removes the node *node* from the graph
+        Removes the node n from the graph (and the neighbour sets of all its neighbours).
         :param n: The node to be removed
         """
         if n in self._nodes:
@@ -76,17 +89,27 @@ class Graph:
                 self._nodes[v].remove(n)
 
     def get_nodes(self) -> dict:
+        """
+        Get a dictionary of all the nodes in the graph and their neighbours.
+        {'node name': [neighbours], ...}
+        :return: The node dictionary of the graph.
+        """
         return self._nodes
 
     def get_neighbours(self, node: str) -> list:
+        """
+        Get the neighbour set of a given node.
+        :param node: The name of the node which neighbour set you desire.
+        :return: A list of the neighbours of node name.
+        """
         return self._nodes[node]
 
     def get_sub_graph(self, start: str, disc_dict) -> tuple:
         """
-        Returns the connected subgraph of self, which contains the node start.
+        Returns the connected sub graph of self, which contains the node start.
         :param start: The node from which to calculate distances.
         :param disc_dict: A dictionary with all the nodes not already discovered in the tree.
-        :return: The connected subgraph in self containing start.
+        :return: The connected sub graph in self containing start.
         """
         new_deq = deque()
         q = deque()
@@ -106,7 +129,7 @@ class Graph:
         This method will destroy the graph.
         Calculates the number of different connected sub graphs is the graph.
         Also updates the attribute self.number_of_subgraphs.
-        :return: A list with the string representations of the subgraphs in self.
+        :return: A list with the string representations of the sub graphs in self.
         """
         csg = deque()
         disc_dict = {}
@@ -122,45 +145,3 @@ class Graph:
                 self.remove(node)
             csg.append(new_str.strip())
         return csg
-
-
-if __name__ == '__main__':
-
-    import sys
-
-    from time import time
-
-    start_1 = time()
-
-    print('Initializing parsing...')
-
-    g = Graph.parse("resources/unsocial_contigs_over_{}.txt".format(sys.argv[1]))
-
-    end_1 = time()
-
-    print('Parsing complete and took {} seconds'.format(end_1 - start_1))
-
-    print('Creating subgraphs...')
-
-    start_3 = time()
-
-    l = g.csg_ify()
-
-    end_3 = time()
-
-    print('Subgraphs created. It took {} seconds'.format(end_3 - start_3))
-
-    print('Creating resultfile...')
-
-    start_4 = time()
-
-    with open('/results/Result_'+sys.argv[1]+'.txt','w+') as res:
-        while l:
-            res.write(l.popleft()+'\n')
-
-
-    end_4 = time()
-
-    print('Creating the result file took {} seconds'.format(end_4 - start_4))
-
-    print('Finished.')
