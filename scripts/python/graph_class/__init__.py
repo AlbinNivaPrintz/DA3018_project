@@ -1,41 +1,38 @@
 from collections import deque
 
+
 class Graph:
     def __init__(self):
         self._nodes = {}
-        self._number_of_subgraphs = None
-
-    def __str__(self):
-        out = str(len(self)) + "\t"
-        for node in self._nodes:
-            out += node + "\t"
-        return out
 
     def __len__(self):
-        return len(list(self._nodes.values()))
+        """
+        :return: The number of nodes in the graph.
+        """
+        return len(self._nodes.values())
 
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
         """
-
         Creates a graph object from file
         :param filename: name of the file where the graph is
         :param n_lines: how many lines of the file do you want to read, optional
         :return: graph object
         """
         G = Graph()
-        fileObject = open(filename, 'r')
-        n = 0
-        for line in fileObject:
-            if n == n_lines:
-                break
-            if not n % 1000000:
-                print(n)
-            n += 1
-            out = line.split()
-            nodeA = out[0]
-            nodeB = out[1]
-            G.connect(nodeA, nodeB)
+        with open(filename, 'r') as fileObject:
+            n = 0
+            for line in fileObject:
+                if n == n_lines:
+                    # If the optional argument n_lines is passed,
+                    # this makes sure the script stops reading at
+                    # the appropriate place.
+                    break
+                n += 1
+                out = line.split()
+                nodeA = out[0]
+                nodeB = out[1]
+                G.connect(nodeA, nodeB)
         return G
 
     def create_node(self, name: str, neighbours=None):
@@ -76,21 +73,13 @@ class Graph:
         if n in self._nodes:
             neighbour_list = self._nodes.pop(n)
             for v in neighbour_list:
-                if v in self._nodes:
-                    if n in self._nodes[v]:
-                        self._nodes[v].remove(n)
+                self._nodes[v].remove(n)
 
     def get_nodes(self) -> dict:
         return self._nodes
 
     def get_neighbours(self, node: str) -> list:
         return self._nodes[node]
-
-    def set_number_of_subgraphs(self, number: int):
-        self._number_of_subgraphs = number
-
-    def get_number_of_subgraphs(self) -> int:
-        return self._number_of_subgraphs
 
     def get_sub_graph(self, start: str, disc_dict) -> tuple:
         """
@@ -117,75 +106,22 @@ class Graph:
         This method will destroy the graph.
         Calculates the number of different connected sub graphs is the graph.
         Also updates the attribute self.number_of_subgraphs.
-        :return: A list with all the connected subgrahs of self.
+        :return: A list with the string representations of the subgraphs in self.
         """
         csg = deque()
         disc_dict = {}
-        c = 0
         for node in self._nodes:
             disc_dict[node] = 1
         while len(self._nodes) > 0:
             nodename, x = disc_dict.popitem()
-            if not c % 100000:
-                print(len(self._nodes), "left to check.")
             new_deq, disc_dict = self.get_sub_graph(nodename, disc_dict)
-            new_str = str(len(new_deq))
+            new_str = ""
             while new_deq:
                 node = new_deq.popleft()
                 new_str += "\t" + node
                 self.remove(node)
-            csg.append(new_str)
-            c += 1
+            csg.append(new_str.strip())
         return csg
-
-    def save_to_file(self, directory: str):
-        """
-        Uses pickle to save nodes and arcs to a file.
-        :param directory: Save directory.
-        """
-        import pickle
-        fileObject = open(directory, 'wb')
-        pickle.dump(self._nodes, fileObject)
-        fileObject.close()
-
-    def load_from_file(self, directory: str):
-        """
-        Uses pickle to load nodes and arcs from a file.
-        :param directory: Load directory.
-        """
-        import pickle
-        fileObject = open(directory, 'rb')
-        self._nodes = pickle.load(fileObject)
-        fileObject.close()
-
-    def social_node_remover(self, start, no_neighbours: int):
-        # Removes nodes with number of neighbours equal to or more than no_neighbours
-        import queue as q
-
-        def social_node_lister(self: Graph, start, no_neighbours: int):
-            # Lists nodes with number of neighbours equal to or more than no_neighbours
-            social_nodes = []
-            undiscovered = []
-            for node in self.get_nodes():
-                undiscovered.append(node)
-            if len(start.get_neighbours()) >= no_neighbours:
-                social_nodes.append(start)
-            undiscovered.remove(start)
-            Q = q.Queue(len(self.get_nodes()))
-            Q.put(start)
-            while not Q.empty() > 0:
-                u = Q.get()
-                for v in u.get_neighbours():
-                    if v in undiscovered:
-                        undiscovered.pop(v)
-                        if len(v.get_neighbours()) >= no_neighbours:
-                            social_nodes.append(v)
-                        Q.put(v)
-            return social_nodes
-
-        social_nodes = social_node_lister(self, start, no_neighbours)
-        for node in social_nodes:
-            self.remove(node)
 
 
 if __name__ == '__main__':
@@ -198,7 +134,7 @@ if __name__ == '__main__':
 
     print('Initializing parsing...')
 
-    g = Graph.parse("../../resources/unsocial_contigs_over_{}.txt".format(sys.argv[1]))
+    g = Graph.parse("resources/unsocial_contigs_over_{}.txt".format(sys.argv[1]))
 
     end_1 = time()
 
@@ -218,7 +154,7 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    with open('../../results/Result_'+sys.argv[1]+'.txt','w+') as res:
+    with open('/results/Result_'+sys.argv[1]+'.txt','w+') as res:
         while l:
             res.write(l.popleft()+'\n')
 

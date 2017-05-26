@@ -49,10 +49,22 @@ class TestGraphMethods(unittest.TestCase):
         self.assertNotIn('A', self.test_graph.get_neighbours('B'))
 
     def test_get_sub_graph(self):
-        from collections import deque
+        """
+        Tests the method get_sub_graph.
+        """
         deq, disc = self.test_graph.get_sub_graph('A', {'A':1, 'B':1,'C':1})
         self.assertEqual(set(deq), {'A', 'B', 'C'})
         self.assertEqual(disc, {})
+
+    def test_csg_ify(self):
+        """
+        Tests the method csg_ify
+        """
+        lines = list(self.test_graph.csg_ify())
+        for line in lines:
+            line = set(line.split("\t"))
+            self.assertTrue((line == {'A', 'B', 'C'}) or (line == {'D', 'F'}))
+        self.assertTrue(lines[0] != lines[1] and len(lines) == 2)
 
 
 if __name__ == '__main__':
