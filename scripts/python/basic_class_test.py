@@ -66,6 +66,12 @@ class TestGraphMethods(unittest.TestCase):
             self.assertTrue((line == {'A', 'B', 'C'}) or (line == {'D', 'F'}))
         self.assertTrue(lines[0] != lines[1] and len(lines) == 2)
 
+    def test_parser(self):
+        """
+        Tests the class method parser.
+        """
+        parsed = gc.Graph.parse("../../resources/test_input.txt")
+        self.assertEqual(parsed.get_nodes(), self.test_graph.get_nodes())
 
 if __name__ == '__main__':
     unittest.main()
