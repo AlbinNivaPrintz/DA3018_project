@@ -218,7 +218,7 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    with open('../../results/Result.txt','w+') as res:
+    with open('../../results/Result_'+sys.argv[2]+'.txt','w+') as res:
         while l:
             res.write(l.popleft()+'\n')
 

@@ -1,4 +1,8 @@
-rm ../../resources/unsocial_contigs.txt
-split -l 16014193 ../../resources/Spruce_fingerprint_2017-03-10_16.48.olp.m4
-parallel python ../python/social_contig_remover.py ../../resources/over_19_neighbours.txt ../../resources/unsocial_contigs.txt ::: xaa xab xac xad
+FILE=$1
+n=$2
+SIZE=`wc -l < $1`
+
+rm ../../resources/unsocial_contigs_over_$n.txt 2>/dev/null
+split -l $((SIZE/4+1)) $FILE
+parallel python ../python/social_contig_remover.py ../../resources/more_neighbours_than_$n.txt ../../resources/unsocial_contigs_over_$n.txt ::: xaa xab xac xad
 rm xa*
