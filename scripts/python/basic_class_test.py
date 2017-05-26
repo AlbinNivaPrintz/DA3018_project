@@ -8,9 +8,9 @@ class TestGraphMethods(unittest.TestCase):
     """
     def setUp(self):
         self.test_graph = gc.Graph()
-        self.test_graph.connect('A', (0, 1), 2, 'B', (1, 2), 2, '0.98')
-        self.test_graph.connect('B', (0, 1), 2, 'C', (1, 2), 2, '0.98')
-        self.test_graph.connect('D', (0, 1), 2, 'F', (1, 2), 2, '0.98')
+        self.test_graph.connect('A', 'B')
+        self.test_graph.connect('B', 'C')
+        self.test_graph.connect('D', 'F')
 
     def test_type_test(self):
         """
@@ -19,36 +19,26 @@ class TestGraphMethods(unittest.TestCase):
         self.assertIsInstance(self.test_graph.get_nodes(), dict)
         self.assertEqual(set(self.test_graph.get_nodes().keys()), {'A', 'B', 'C', 'D', 'F'})
         for name in self.test_graph.get_nodes():
-            self.assertIsInstance(self.test_graph.get_nodes()[name], gc.Node)
-        node = self.test_graph.get_nodes()['A']
-        self.assertIsInstance(node.get_name(), str)
-        self.assertIsInstance(node.get_length(), int)
-        neigh_dict = node.get_neighbours()
-        self.assertIsInstance(neigh_dict, dict)
-        self.assertIn('B', neigh_dict)
-        self.assertIsInstance(neigh_dict['B'], gc.Arc)
-        arc = neigh_dict['B']
-        self.assertIn('B', arc.nodes)
-        self.assertIn('A', arc.nodes)
-        self.assertEqual((0, 1), arc.nodes['A'])
-        self.assertIsInstance(arc.similarity, float)
-        self.assertTrue((arc.similarity <= 1) and (arc.similarity > 0))
+            self.assertIsInstance(self.test_graph.get_neighbours(name), list)
+        self.assertIn('B', self.test_graph.get_neighbours('A'))
+        self.assertIn('A', self.test_graph.get_neighbours('B'))
 
     def test_create_test(self):
         """
         Makes sure it is possible to create a node in the graph.
         """
-        self.test_graph.create_node('E', 3)
+        self.test_graph.create_node('E', ['D'])
         self.assertIn('E', self.test_graph.get_nodes())
+        self.assertIn('D', self.test_graph.get_neighbours('E'))
+        self.assertIn('E', self.test_graph.get_neighbours('D'))
 
     def test_connect_nodes(self):
         """
         Makes sure it is possible to create a node via connect.
         """
-        self.test_graph.connect('NEW', (0, 1), 2, 'A', (1, 2), 2, '0.98')
+        self.test_graph.connect('NEW', 'A')
         self.assertIn('NEW', self.test_graph.get_nodes())
-        node_a = self.test_graph.get_nodes()['A']
-        self.assertIn('NEW', node_a.get_neighbours())
+        self.assertIn('NEW', self.test_graph.get_neighbours('A'))
 
     def test_remove(self):
         """
@@ -56,15 +46,13 @@ class TestGraphMethods(unittest.TestCase):
         """
         self.test_graph.remove('A')
         self.assertNotIn('A', self.test_graph.get_nodes())
-        neighbours_of_B = self.test_graph.get_nodes()['B'].get_neighbours()
-        self.assertNotIn('A', neighbours_of_B)
+        self.assertNotIn('A', self.test_graph.get_neighbours('B'))
 
-    def test_distance(self):
-        import math
-        dist = self.test_graph.distance('A')
-        self.assertEqual(dist['A'], 0)
-        self.assertEqual(dist['C'], 2)
-        self.assertEqual(dist['D'], math.inf)
+    def test_get_sub_graph(self):
+        from collections import deque
+        deq, disc = self.test_graph.get_sub_graph('A', {'A':1, 'B':1,'C':1})
+        self.assertEqual(set(deq), {'A', 'B', 'C'})
+        self.assertEqual(disc, {})
 
 
 if __name__ == '__main__':

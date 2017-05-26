@@ -1,7 +1,18 @@
+from collections import deque
+
 class Graph:
     def __init__(self):
         self._nodes = {}
         self._number_of_subgraphs = None
+
+    def __str__(self):
+        out = str(len(self)) + "\t"
+        for node in self._nodes:
+            out += node + "\t"
+        return out
+
+    def __len__(self):
+        return len(list(self._nodes.values()))
 
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
@@ -24,59 +35,56 @@ class Graph:
             out = line.split()
             nodeA = out[0]
             nodeB = out[1]
-            similarity = out[3]
-            matchA = (out[5], out[6])
-            lengthA = int(out[7])
-            matchB = (out[9], out[10])
-            lengthB = int(out[11])
-            G.connect(nodeA, matchA, lengthA,
-                      nodeB, matchB, lengthB,
-                      similarity)
+            G.connect(nodeA, nodeB)
         return G
 
-    def create_node(self, name: str, length: int, neighbours=None):
+    def create_node(self, name: str, neighbours=None):
         """
         Creates a node object, and puts it in the graph
         :param name: Name of the node
-        :param length: Length of the string represented by the node
-        :param neighbours: Optional neighbour set
+        :param neighbours: Optional list of the neighbours
         """
-        self._nodes[name] = Node(name, length)
-        if neighbours:
-            self._nodes[name].set_neighbours(neighbours)
+        if not neighbours:
+            neighbours = []
+        self._nodes[name] = neighbours
+        for n in neighbours:
+            if n not in self._nodes:
+                self.create_node(n, [name])
+            else:
+                self._nodes[n].append(name)
 
-    def connect(self, nodeA: str, sectionA: tuple, lengthA: int,
-                nodeB: str, sectionB: tuple, lengthB: int, similarity: str):
+    def connect(self, nodeA: str, nodeB: str):
         """
         Connects two nodes in the graph. If any of them is not already in the graph, it creates them first.
         :param nodeA: Name of the first node.
-        :param sectionA: Location of match in nodeA
         :param nodeB: Name of second node.
-        :param sectionB: Location of match in nodeB
-        :param similarity: Strength of match
-        :param lengthA: Length of nodeA
-        :param lengthB: Length of nodeB
         """
         if nodeB not in self._nodes:
-            self.create_node(nodeB, lengthB)
+            self._nodes[nodeB] = [nodeA]
         if nodeA not in self._nodes:
-            self.create_node(nodeA, lengthA)
-        arc = Arc(nodeA, sectionA, nodeB, sectionB, similarity)
-        self._nodes[nodeB].insert(nodeA, arc)
-        self._nodes[nodeA].insert(nodeB, arc)
+            self._nodes[nodeA] = [nodeB]
+        if nodeA not in self._nodes[nodeB]:
+            self._nodes[nodeB].append(nodeA)
+        if nodeB not in self._nodes[nodeA]:
+            self._nodes[nodeA].append(nodeB)
 
     def remove(self, n: str):
         """
         Removes the node *node* from the graph
         :param n: The node to be removed
         """
-        neighbour_list = list(self._nodes[n].get_neighbours().keys())
-        self._nodes.pop(n)
-        for v in neighbour_list:
-            self._nodes[v].remove_a_neighbour(n)
+        if n in self._nodes:
+            neighbour_list = self._nodes.pop(n)
+            for v in neighbour_list:
+                if v in self._nodes:
+                    if n in self._nodes[v]:
+                        self._nodes[v].remove(n)
 
-    def get_nodes(self):
+    def get_nodes(self) -> dict:
         return self._nodes
+
+    def get_neighbours(self, node: str) -> list:
+        return self._nodes[node]
 
     def set_number_of_subgraphs(self, number: int):
         self._number_of_subgraphs = number
@@ -84,32 +92,51 @@ class Graph:
     def get_number_of_subgraphs(self) -> int:
         return self._number_of_subgraphs
 
-    def distance(self, start: str):
+    def get_sub_graph(self, start: str, disc_dict) -> tuple:
         """
-        Calculates distance from the node start to all other nodes in the graph.
-        In the returned dictionary, start node gets a distance of zero,
-        and nodes not connected to the start node gets math.inf.
+        Returns the connected subgraph of self, which contains the node start.
         :param start: The node from which to calculate distances.
-        :return: A dictionary like {'node': distance to start, ...}.
+        :param disc_dict: A dictionary with all the nodes not already discovered in the tree.
+        :return: The connected subgraph in self containing start.
         """
-        import queue
-        import math
-        infty = math.inf
-        dist_so_far = 0
-        dist_dict = {}
+        new_deq = deque()
+        q = deque()
+        q.append(start)
+        new_deq.append(start)
+        while len(q) > 0:
+            v = q.popleft()
+            for u in self._nodes[v]:
+                if u in disc_dict:
+                    q.append(u)
+                    disc_dict.pop(u)
+                    new_deq.append(u)
+        return new_deq, disc_dict
+
+    def csg_ify(self):
+        """
+        This method will destroy the graph.
+        Calculates the number of different connected sub graphs is the graph.
+        Also updates the attribute self.number_of_subgraphs.
+        :return: A list with all the connected subgrahs of self.
+        """
+        csg = deque()
+        disc_dict = {}
+        c = 0
         for node in self._nodes:
-            dist_dict[node] = infty
-        q = queue.Queue()
-        q.put(start)
-        dist_dict[start] = dist_so_far
-        while not q.empty():
-            v = q.get()
-            dist_so_far = dist_dict[v] + 1
-            for u in self._nodes[v].get_neighbours():
-                if dist_dict[u] == infty:
-                    q.put(u)
-                    dist_dict[u] = dist_so_far
-        return dist_dict
+            disc_dict[node] = 1
+        while len(self._nodes) > 0:
+            nodename, x = disc_dict.popitem()
+            if not c % 100000:
+                print(len(self._nodes), "left to check.")
+            new_deq, disc_dict = self.get_sub_graph(nodename, disc_dict)
+            new_str = str(len(new_deq))
+            while new_deq:
+                node = new_deq.popleft()
+                new_str += "\t" + node
+                self.remove(node)
+            csg.append(new_str)
+            c += 1
+        return csg
 
     def save_to_file(self, directory: str):
         """
@@ -130,105 +157,6 @@ class Graph:
         fileObject = open(directory, 'rb')
         self._nodes = pickle.load(fileObject)
         fileObject.close()
-
-    def number_of_csg(self):
-        """
-        Calculates the number of different connected sub graphs is the graph.
-        Also updates the attribute self.number_of_subgraphs.
-        :return: a list containing one node from each connected sub graph.
-        """
-        import math
-        backup = dict(self._nodes)
-        c = 0
-        distinct = []
-        while len(self._nodes) > 0:
-            for k in self._nodes:
-                dist = self.distance(k)
-                if not c % 100:
-                    print(len(self._nodes), 'left to check.')
-                for i in dist:
-                    if dist[i] != math.inf and dist[i] != 0:
-                        self._nodes.pop(i)
-                distinct.append(k)
-                self._nodes.pop(k)
-                break
-            c += 1
-        self._nodes = backup
-        self._number_of_subgraphs = len(distinct)
-        return distinct
-
-    # def sub_graph_numberer(self): # Gives all the nodes in each subgraph a number specific to the subgraph
-    #     undiscovered = []
-    #     for node in self.get_nodes():
-    #         undiscovered.append(node)
-    #     i = 0
-    #     for node in self.get_nodes():
-    #         if not node.get_graph_number():
-    #             i += 1
-    #             self.bfs_numberer(node, i, undiscovered)
-    #     self.set_number_of_subgraphs(i)
-
-    def sub_graph_numberer(self):  # Gives all the nodes in each subgraph a number specific to the subgraph
-        undiscovered = []
-        for node in self.get_nodes().keys():
-            undiscovered.append(node)
-        i = 0
-        for node in self.get_nodes().keys():
-            if not self.get_nodes()[node].get_graph_number():
-                i += 1
-                self.bfs_numberer(node, i, undiscovered)
-                # print(i) # Remove!
-        self.set_number_of_subgraphs(i)
-
-    # def sub_graph_creater(self): # Takes a graph and returns a list of its connected subgraphs
-    #     l = []
-    #     for i in range(1, self.get_number_of_subgraphs + 1):
-    #         l[i - 1] = Graph()
-    #         for node in self.get_nodes():
-    #             if node.get_graph_number() == i:
-    #                 l[i - 1].create_node(node, node.get_length(), node.get_neighbours())
-    #                 self.remove(node)
-    #     return l
-
-    def sub_graph_creater(self):  # Takes a graph and returns a list of its connected subgraphs
-        l = []
-        for i in range(1, self.get_number_of_subgraphs() + 1):
-            # print(i) # Remove!
-            graph = Graph()
-            l.append(graph)
-            for node in self.get_nodes().values():
-                if node.get_graph_number() == i:
-                    l[i - 1].create_node(node.get_name(), node.get_length(), node.get_neighbours())
-                    # self.remove(node)
-        return l
-
-    # def bfs_numberer(self, start, number, undiscovered): # Numbers the nodes in a connected graph with number
-    #     undiscovered.pop(start)
-    #     start.set_graph_number(number)
-    #     Q = fifoqueue(len(self.get_nodes()))
-    #     Q.enqueue(start)
-    #     while Q.len > 0:
-    #         u = Q.dequeue()
-    #         for v in u.get_neighbours():
-    #             if v in undiscovered:
-    #                 undiscovered.pop(v)
-    #                 v.set_graph_number(number)
-    #                 Q.enqueue(v)
-
-    def bfs_numberer(self, start: str, number: int, undiscovered: list):
-        # Numbers the nodes in a connected graph with number
-        import queue as q
-        undiscovered.remove(self.get_nodes()[start].get_name())
-        self.get_nodes()[start].set_graph_number(number)
-        Q = q.Queue(len(self.get_nodes()))
-        Q.put(start)
-        while not Q.empty() > 0:
-            u = Q.get()
-            for v in list(self.get_nodes()[u].get_neighbours().keys()):
-                if v in undiscovered:
-                    undiscovered.remove(v)
-                    self.get_nodes()[v].set_graph_number(number)
-                    Q.put(v)
 
     def social_node_remover(self, start, no_neighbours: int):
         # Removes nodes with number of neighbours equal to or more than no_neighbours
@@ -260,121 +188,43 @@ class Graph:
             self.remove(node)
 
 
-class Arc:
-    """
-    An arc class.
-    """
-
-    def __init__(self, nameA: str, sectionA: tuple, nameB: str, sectionB: tuple, similarity: str):
-        self.nodes = {nameA: sectionA, nameB: sectionB}
-        self.similarity = float(similarity)
-
-
-class Node:
-    """
-    Node class.
-    """
-
-    def __init__(self, name: str, length: int):
-        self._name = name
-        self._neighbours = {}
-        self._length = length
-        self._color = None
-        self._graph_number = None
-
-    def insert(self, name: str, arc):
-        """
-        Places a node in the neighbour set of this node.
-        :param name: Name of the neighbour
-        :param arc: The  arc object that connects the two nodes
-        """
-        self._neighbours[name] = arc
-
-    def get_name(self):
-        return self._name
-
-    def get_length(self):
-        """
-        Get the length of the node
-        :return: length of node as float
-        """
-        return self._length
-
-    def set_color(self, color: str):
-        """
-        Set the color of the node.
-        :param color: Color
-        """
-        self._color = color
-
-    def get_color(self):
-        """
-        Get the color of the node.
-        :return: Color of the node as string.
-        """
-        return self._color
-
-    def set_graph_number(self, number: int):
-        """
-        Specify which internal graph the node belongs to.
-        :param number: Internal graph number
-        """
-        self._graph_number = number
-
-    def get_graph_number(self):
-        """
-        Number of which the node belongs to.
-        :return: The number of the graph the node belongs to.
-        """
-        return self._graph_number
-
-    def get_neighbours(self):
-        """
-        Get the neighbour set of the node.
-        :return: The neighbour set as a dictionary.
-        """
-        return self._neighbours
-
-    def set_neighbours(self, neighbours: dict):
-        """
-        Manually creates a neighbour set for the node.
-
-        Be certain the dict you're setting is on the right from.
-
-        :param neighbours: the neighbour set
-        """
-        self._neighbours = neighbours
-
-    def set_a_neighbour(self, name: str, arc):
-        self._neighbours[name] = arc
-
-    def remove_a_neighbour(self, name: str):
-        self._neighbours.pop(name)
-
 if __name__ == '__main__':
+
+    import sys
 
     from time import time
 
     start_1 = time()
 
-    g = Graph.parse('Spruce_fingerprint_2017-03-10_16.48.olp.m4', 10**4)
+    print('Initializing parsing...')
+
+    g = Graph.parse(sys.argv[1])
 
     end_1 = time()
 
-    print('Parsing took {} seconds'.format(end_1 - start_1))
+    print('Parsing complete and took {} seconds'.format(end_1 - start_1))
 
-    start_2 = time()
-
-    g.sub_graph_numberer()
-
-    end_2 = time()
-
-    print('Numbering subgraphs took {} seconds'.format(end_2 - start_2))
+    print('Creating subgraphs...')
 
     start_3 = time()
 
-    l = g.sub_graph_creater()
+    l = g.csg_ify()
 
     end_3 = time()
 
-    print('Creating new subgraphs took {} seconds'.format(end_3 - start_3))
+    print('Subgraphs created. It took {} seconds'.format(end_3 - start_3))
+
+    print('Creating resultfile...')
+
+    start_4 = time()
+
+    with open('../../results/Result.txt','w+') as res:
+        while l:
+            res.write(l.popleft()+'\n')
+
+
+    end_4 = time()
+
+    print('Creating the result file took {} seconds'.format(end_4 - start_4))
+
+    print('Finished.')
