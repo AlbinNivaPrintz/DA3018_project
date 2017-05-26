@@ -27,7 +27,7 @@ print('Creating resultfile...')
 
 start_4 = time()
 
-with open('/results/Result_'+sys.argv[1]+'.txt', 'w+') as res:
+with open('results/Result_'+sys.argv[1]+'.txt', 'w+') as res:
     while l:
         res.write(l.popleft()+'\n')
 
