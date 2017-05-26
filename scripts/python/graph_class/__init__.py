@@ -198,7 +198,7 @@ if __name__ == '__main__':
 
     print('Initializing parsing...')
 
-    g = Graph.parse(sys.argv[1])
+    g = Graph.parse("../../resources/unsocial_contigs_over_{}.txt".format(sys.argv[1]))
 
     end_1 = time()
 
@@ -218,7 +218,7 @@ if __name__ == '__main__':
 
     start_4 = time()
 
-    with open('../../results/Result_'+sys.argv[2]+'.txt','w+') as res:
+    with open('../../results/Result_'+sys.argv[1]+'.txt','w+') as res:
         while l:
             res.write(l.popleft()+'\n')
 
