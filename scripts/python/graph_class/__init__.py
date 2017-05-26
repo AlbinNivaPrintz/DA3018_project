@@ -13,7 +13,7 @@ class Graph:
         """
         :return: The number of nodes in the graph.
         """
-        return len(self._nodes.values())
+        return len(self._nodes)
 
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
@@ -50,16 +50,16 @@ class Graph:
         """
         Creates a node, and puts it in the graph.
         :param name: Name of the node
-        :param neighbours: Optional list of the neighbours
+        :param neighbours: Optional dict of the neighbours
         """
         if not neighbours:
-            neighbours = []
+            neighbours = {}
         self._nodes[name] = neighbours
         for n in neighbours:
             if n not in self._nodes:
-                self.create_node(n, [name])
+                self.create_node(n, {name: 1})
             else:
-                self._nodes[n].append(name)
+                self._nodes[n][name] = 1
 
     def connect(self, nodeA: str, nodeB: str):
         """
@@ -68,15 +68,15 @@ class Graph:
         :param nodeB: Name of second node.
         """
         if nodeB not in self._nodes:
-            self._nodes[nodeB] = [nodeA]
+            self._nodes[nodeB] = {nodeA: 1}
         else:
             if nodeA not in self._nodes[nodeB]:
-                self._nodes[nodeB].append(nodeA)
+                self._nodes[nodeB][nodeA] = 1
         if nodeA not in self._nodes:
-            self._nodes[nodeA] = [nodeB]
+            self._nodes[nodeA] = {nodeB: 1}
         else:
             if nodeB not in self._nodes[nodeA]:
-                self._nodes[nodeA].append(nodeB)
+                self._nodes[nodeA][nodeB] = 1
 
     def remove(self, n: str):
         """
@@ -86,7 +86,7 @@ class Graph:
         if n in self._nodes:
             neighbour_list = self._nodes.pop(n)
             for v in neighbour_list:
-                self._nodes[v].remove(n)
+                self._nodes[v].pop(n)
 
     def get_nodes(self) -> dict:
         """

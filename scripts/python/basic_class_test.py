@@ -19,7 +19,7 @@ class TestGraphMethods(unittest.TestCase):
         self.assertIsInstance(self.test_graph.get_nodes(), dict)
         self.assertEqual(set(self.test_graph.get_nodes().keys()), {'A', 'B', 'C', 'D', 'F'})
         for name in self.test_graph.get_nodes():
-            self.assertIsInstance(self.test_graph.get_neighbours(name), list)
+            self.assertIsInstance(self.test_graph.get_neighbours(name), dict)
         self.assertIn('B', self.test_graph.get_neighbours('A'))
         self.assertIn('A', self.test_graph.get_neighbours('B'))
 
@@ -27,7 +27,7 @@ class TestGraphMethods(unittest.TestCase):
         """
         Makes sure it is possible to create a node in the graph.
         """
-        self.test_graph.create_node('E', ['D'])
+        self.test_graph.create_node('E', {'D': 1})
         self.assertIn('E', self.test_graph.get_nodes())
         self.assertIn('D', self.test_graph.get_neighbours('E'))
         self.assertIn('E', self.test_graph.get_neighbours('D'))
