@@ -8,6 +8,6 @@ parallel bash scripts/bash/contigs.sh ::: xaa xab xac xad
 rm column_1_occurences.txt
 rm column_2_occurences.txt
 cat column_1_occurences.txt column_2_occurences.txt | sort | uniq -c > resources/contig_occurences.txt
-echo "All nodes identified."
+echo "Finished search for all nodes."
 cat resources/contig_occurences.txt | awk -v var=$n '{if ($1>var) print $2}' > resources/more_neighbours_than_$n.txt
-echo "All social nodes identified."
+echo "Finished search for all social nodes."
