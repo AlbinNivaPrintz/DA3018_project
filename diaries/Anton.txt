@@ -29,3 +29,37 @@ hur många överlappningar som hade under 0.99 i matchningsratio och såg att de
 var 19618771 stycken, alltså lite mindre än en tredjedel. Vi tänker att vi
 kanske kan använda oss av det om vår metod inte rensar bort tillräckligt många
 contiger.
+
+2018-05-22:
+
+Hela dagen gick åt till att buggfixa python-funktionerna som numrerade 
+delgrafer samt delade upp dem. Fick dem att fungera, men de går inte särskilt
+snabbt att köra. Försökte läsa in indata-filen till ett grafobjekt i Python,
+men det gick väldigt långsamt och kändes inte görbart.
+
+2018-05-23:
+
+Med anledning av att det gick långsamt att försöka läsa in hela indatafilen 
+direkt började jag skriva Bash- och Pythonscript som tillsammans rensar ut de contiger
+som har fler än ett specifierat antal överlappningar och skapar en ny fil med
+de kvarvarande contigernas överlappningar. Tanken är att det sedan ska gå
+snabbare att läsa in den nya indatafilen i Python.   
+
+2018-05-24:
+
+Skrev klart Bash- och Pythonscripten. Försökte köra hela huvudscriptet, gick inte
+fastän jag lät datorn stå på över natten. Det är uppdelningen i delgrafer som 
+tar tid.
+
+2018-05-25:
+
+Ägnade dagen åt att försöka optimera algoritmen för uppdelning i delgrafer
+tillsammans med Albin. Albin lyckades hitta flaskhalsen med hjälp av 
+line_profiler. Han fixar det och nu går koden väldigt mycket snabbare, och kan 
+köras på ca 20 minuter för låga trösklar för antalet överlappningar (<=20 typ).
+
+2018-05-26:
+
+Började skriva på rapporten. Parallelliserade over_n_neighbours.sh. La till
+möjlighet till SKIP i main.sh, som gör att körningen blir snabbare om en
+körning på indatan redan gjorts.
