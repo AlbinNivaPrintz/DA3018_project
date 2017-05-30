@@ -46,21 +46,6 @@ class Graph:
                 G.connect(nodeA, nodeB)
         return G
 
-    def create_node(self, name: str, neighbours=None):
-        """
-        Creates a node, and puts it in the graph.
-        :param name: Name of the node
-        :param neighbours: Optional dict of the neighbours
-        """
-        if not neighbours:
-            neighbours = {}
-        self._nodes[name] = neighbours
-        for n in neighbours:
-            if n not in self._nodes:
-                self.create_node(n, {name: 1})
-            else:
-                self._nodes[n][name] = 1
-
     def connect(self, nodeA: str, nodeB: str):
         """
         Connects two nodes in the graph. If any of them is not already in the graph, it creates them first.
