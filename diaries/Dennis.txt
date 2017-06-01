@@ -25,3 +25,27 @@ som indata (överlappningar, längd, matchning m.m.). Målet är att filen ska s
 som en .m4-fil, men för tillfället får det vara en .txt-fil. Eftersom Albin och Anton
 börjat skriva kodsnuttar som skapar delgrafer så behövde jag även sätta
 mig in i dessa så att de fungerar ihop med min kod.
+
+
+22/5-17
+-------
+Fick klart output-filen så att allting hamnade rätt och började ordna så att
+det samspelade med resterande kod
+
+
+24/5-17
+-------
+Vi samlade gänget och pratade med Lars angående ifall vi verkligen tänker rätt.
+Vi hade hade tagit till med för många attribut och blev tvungna att ändra koden.
+Därefter började vi fundera ut hur man kan använda Unix tillsammans med vår våra script.
+
+25/5-17
+-------
+Började felsöka kod och skapa en main så att den fungerar med unix.
+
+26/5-17
+-------
+Började skriva på projektrapporten, provköra programmet och räkna på
+tidskomplexitet för samtliga funktioner.
+
+
