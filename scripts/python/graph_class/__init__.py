@@ -1,57 +1,50 @@
 from collections import deque
 
+
 class Graph:
+    """
+    A simple graph class, designed for dividing a 
+    graph class into its connected sub graphs and printing the output.
+    """
     def __init__(self):
         self._nodes = {}
-        self._number_of_subgraphs = None
-
-    def __str__(self):
-        out = str(len(self)) + "\t"
-        for node in self._nodes:
-            out += node + "\t"
-        return out
 
     def __len__(self):
-        return len(list(self._nodes.values()))
+        """
+        :return: The number of nodes in the graph.
+        """
+        return len(self._nodes)
 
     @classmethod
     def parse(cls, filename: str, n_lines=-1):
         """
-
-        Creates a graph object from file
-        :param filename: name of the file where the graph is
+        Creates a graph object from file.
+        Each line in the file should contain a node pair,
+        representing an arc in the graph. Example:
+        
+        node1   node2
+        node3   node4
+        ...
+        
+        :param filename: path to the input file.
         :param n_lines: how many lines of the file do you want to read, optional
         :return: graph object
         """
         G = Graph()
-        fileObject = open(filename, 'r')
-        n = 0
-        for line in fileObject:
-            if n == n_lines:
-                break
-            if not n % 1000000:
-                print(n)
-            n += 1
-            out = line.split()
-            nodeA = out[0]
-            nodeB = out[1]
-            G.connect(nodeA, nodeB)
+        with open(filename, 'r') as fileObject:
+            n = 0
+            for line in fileObject:
+                if n == n_lines:
+                    # If the optional argument n_lines is passed,
+                    # this makes sure the script stops reading at
+                    # the appropriate place.
+                    break
+                n += 1
+                out = line.split()
+                nodeA = out[0]
+                nodeB = out[1]
+                G.connect(nodeA, nodeB)
         return G
-
-    def create_node(self, name: str, neighbours=None):
-        """
-        Creates a node object, and puts it in the graph
-        :param name: Name of the node
-        :param neighbours: Optional list of the neighbours
-        """
-        if not neighbours:
-            neighbours = []
-        self._nodes[name] = neighbours
-        for n in neighbours:
-            if n not in self._nodes:
-                self.create_node(n, [name])
-            else:
-                self._nodes[n].append(name)
 
     def connect(self, nodeA: str, nodeB: str):
         """
@@ -60,44 +53,48 @@ class Graph:
         :param nodeB: Name of second node.
         """
         if nodeB not in self._nodes:
-            self._nodes[nodeB] = [nodeA]
+            self._nodes[nodeB] = {nodeA: 1}
+        else:
+            if nodeA not in self._nodes[nodeB]:
+                self._nodes[nodeB][nodeA] = 1
         if nodeA not in self._nodes:
-            self._nodes[nodeA] = [nodeB]
-        if nodeA not in self._nodes[nodeB]:
-            self._nodes[nodeB].append(nodeA)
-        if nodeB not in self._nodes[nodeA]:
-            self._nodes[nodeA].append(nodeB)
+            self._nodes[nodeA] = {nodeB: 1}
+        else:
+            if nodeB not in self._nodes[nodeA]:
+                self._nodes[nodeA][nodeB] = 1
 
     def remove(self, n: str):
         """
-        Removes the node *node* from the graph
+        Removes the node n from the graph (and the neighbour sets of all its neighbours).
         :param n: The node to be removed
         """
         if n in self._nodes:
             neighbour_list = self._nodes.pop(n)
             for v in neighbour_list:
-                if v in self._nodes:
-                    if n in self._nodes[v]:
-                        self._nodes[v].remove(n)
+                self._nodes[v].pop(n)
 
     def get_nodes(self) -> dict:
+        """
+        Get a dictionary of all the nodes in the graph and their neighbours.
+        {'node name': [neighbours], ...}
+        :return: The node dictionary of the graph.
+        """
         return self._nodes
 
     def get_neighbours(self, node: str) -> list:
+        """
+        Get the neighbour set of a given node.
+        :param node: The name of the node which neighbour set you desire.
+        :return: A list of the neighbours of node name.
+        """
         return self._nodes[node]
-
-    def set_number_of_subgraphs(self, number: int):
-        self._number_of_subgraphs = number
-
-    def get_number_of_subgraphs(self) -> int:
-        return self._number_of_subgraphs
 
     def get_sub_graph(self, start: str, disc_dict) -> tuple:
         """
-        Returns the connected subgraph of self, which contains the node start.
+        Returns the connected sub graph of self, which contains the node start.
         :param start: The node from which to calculate distances.
         :param disc_dict: A dictionary with all the nodes not already discovered in the tree.
-        :return: The connected subgraph in self containing start.
+        :return: The connected sub graph in self containing start.
         """
         new_deq = deque()
         q = deque()
@@ -117,114 +114,19 @@ class Graph:
         This method will destroy the graph.
         Calculates the number of different connected sub graphs is the graph.
         Also updates the attribute self.number_of_subgraphs.
-        :return: A list with all the connected subgrahs of self.
+        :return: A list with the string representations of the sub graphs in self.
         """
         csg = deque()
         disc_dict = {}
-        c = 0
         for node in self._nodes:
             disc_dict[node] = 1
         while len(self._nodes) > 0:
             nodename, x = disc_dict.popitem()
-            if not c % 100000:
-                print(len(self._nodes), "left to check.")
             new_deq, disc_dict = self.get_sub_graph(nodename, disc_dict)
-            new_str = str(len(new_deq))
+            new_str = ""
             while new_deq:
                 node = new_deq.popleft()
                 new_str += "\t" + node
                 self.remove(node)
-            csg.append(new_str)
-            c += 1
+            csg.append(new_str.strip())
         return csg
-
-    def save_to_file(self, directory: str):
-        """
-        Uses pickle to save nodes and arcs to a file.
-        :param directory: Save directory.
-        """
-        import pickle
-        fileObject = open(directory, 'wb')
-        pickle.dump(self._nodes, fileObject)
-        fileObject.close()
-
-    def load_from_file(self, directory: str):
-        """
-        Uses pickle to load nodes and arcs from a file.
-        :param directory: Load directory.
-        """
-        import pickle
-        fileObject = open(directory, 'rb')
-        self._nodes = pickle.load(fileObject)
-        fileObject.close()
-
-    def social_node_remover(self, start, no_neighbours: int):
-        # Removes nodes with number of neighbours equal to or more than no_neighbours
-        import queue as q
-
-        def social_node_lister(self: Graph, start, no_neighbours: int):
-            # Lists nodes with number of neighbours equal to or more than no_neighbours
-            social_nodes = []
-            undiscovered = []
-            for node in self.get_nodes():
-                undiscovered.append(node)
-            if len(start.get_neighbours()) >= no_neighbours:
-                social_nodes.append(start)
-            undiscovered.remove(start)
-            Q = q.Queue(len(self.get_nodes()))
-            Q.put(start)
-            while not Q.empty() > 0:
-                u = Q.get()
-                for v in u.get_neighbours():
-                    if v in undiscovered:
-                        undiscovered.pop(v)
-                        if len(v.get_neighbours()) >= no_neighbours:
-                            social_nodes.append(v)
-                        Q.put(v)
-            return social_nodes
-
-        social_nodes = social_node_lister(self, start, no_neighbours)
-        for node in social_nodes:
-            self.remove(node)
-
-
-if __name__ == '__main__':
-
-    import sys
-
-    from time import time
-
-    start_1 = time()
-
-    print('Initializing parsing...')
-
-    g = Graph.parse("../../resources/unsocial_contigs_over_{}.txt".format(sys.argv[1]))
-
-    end_1 = time()
-
-    print('Parsing complete and took {} seconds'.format(end_1 - start_1))
-
-    print('Creating subgraphs...')
-
-    start_3 = time()
-
-    l = g.csg_ify()
-
-    end_3 = time()
-
-    print('Subgraphs created. It took {} seconds'.format(end_3 - start_3))
-
-    print('Creating resultfile...')
-
-    start_4 = time()
-
-    with open('../../results/Result_'+sys.argv[1]+'.txt','w+') as res:
-        while l:
-            res.write(l.popleft()+'\n')
-
-
-    end_4 = time()
-
-    print('Creating the result file took {} seconds'.format(end_4 - start_4))
-
-    print('Finished.')
