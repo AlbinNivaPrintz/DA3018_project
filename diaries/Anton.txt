@@ -15,17 +15,62 @@ räknat med, men vi tror ändå att vår metod kan ge resultat.
 
 Jag skrev kod som med hjälp av bfs märker alla noder i en sammanhängande
 delgraf med en siffra, och annan kod som med hjälp av detta delar upp en graf i
-en lista av delgrafer. Jag la upp koden på vårt gemensamma repo så att Albin (som
-skapade klasserna) kunde se till att klassmetoderna som behövdes blev
+en lista av delgrafer (dessa togs sedan bort när vi bytte grafrepresentation 
+och ersattes av nya skrivna av Albin). Jag la upp koden på vårt gemensamma repo 
+så att Albin (som skapade klasserna) kunde se till att klassmetoderna som behövdes blev
 implementerade, och vi hjälptes åt att se till så att allt samspelade.
 
 2018-05-19:
 
 Skrev en funktion som med hjälp av bfs går igenom alla noder i en sammanhängande
 graf och lägger alla noder med fler än ett visst antal grannar i en lista, och
-sedan tar bort alla noderna i den listan från grafen. På samma sätt som dagen
-innan såg vi till att all kod samspelade. Skrev ett bash-script som undersökte
-hur många överlappningar som hade under 0.99 i matchningsratio och såg att det
-var 19618771 stycken, alltså lite mindre än en tredjedel. Vi tänker att vi
-kanske kan använda oss av det om vår metod inte rensar bort tillräckligt många
-contiger.
+sedan tar bort alla noderna i den listan från grafen (även dess byttes sedan ut). 
+På samma sätt som dagen innan såg vi till att all kod samspelade. Skrev ett 
+bash-script som undersökte hur många överlappningar som hade under 0.99 i 
+matchningsratio och såg att det var 19618771 stycken, alltså lite mindre än en 
+tredjedel. Vi tänker att vi kanske kan använda oss av det om vår metod inte 
+rensar bort tillräckligt många contiger.
+
+2018-05-22:
+
+Hela dagen gick åt till att buggfixa python-funktionerna som numrerade 
+delgrafer samt delade upp dem. Fick dem att fungera, men de går inte särskilt
+snabbt att köra. Försökte läsa in indata-filen till ett grafobjekt i Python,
+men det gick väldigt långsamt och kändes inte görbart.
+
+2018-05-23:
+
+Med anledning av att det gick långsamt att försöka läsa in hela indatafilen 
+direkt började jag skriva Bash- och Pythonscript som tillsammans rensar ut de contiger
+som har fler än ett specifierat antal överlappningar och skapar en ny fil med
+de kvarvarande contigernas överlappningar. Tanken är att det sedan ska gå
+snabbare att läsa in den nya indatafilen i Python.   
+
+2018-05-24:
+
+Skrev klart Bash- och Pythonscripten. Försökte köra hela huvudscriptet, gick inte
+fastän jag lät datorn stå på över natten. Det är uppdelningen i delgrafer som 
+tar tid.
+
+2018-05-25:
+
+Ägnade dagen åt att försöka optimera algoritmen för uppdelning i delgrafer
+tillsammans med Albin. Albin lyckades hitta flaskhalsen med hjälp av 
+line_profiler. Han fixar det och nu går koden väldigt mycket snabbare, och kan 
+köras på ca 20 minuter för låga trösklar för antalet överlappningar (<=20 typ).
+
+2018-05-26:
+
+Började skriva på rapporten. Parallelliserade over_n_neighbours.sh. La till
+möjlighet till SKIP i main.sh, som gör att körningen blir snabbare om en
+körning på indatan redan gjorts.
+
+2018-05-30:
+
+Skrev om social_contig_remover.py så att den bara skrev ut contignamnen för att
+spara minne. 
+
+2017-06-01:
+
+Vi hjälptes åt att skriva klart rapporten. La till ett bash-script som 
+returnerar storleken på den största delgrafen i utdatan.
