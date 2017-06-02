@@ -71,7 +71,8 @@ class Graph:
         if n in self._nodes:
             neighbour_list = self._nodes.pop(n)
             for v in neighbour_list:
-                self._nodes[v].pop(n)
+                if v in self._nodes:
+                    self._nodes[v].pop(n)
 
     def get_nodes(self) -> dict:
         """
