@@ -1,0 +1,66 @@
+2017_05_17
+
+På laborationstillfället började vi kolla på projektet, och försökte få en bild av hur vi skulle attackera problemet.
+Vi kom fram till att det bästa nog vore att skapa ett grafobjekt, där varje nod är en sträng, och varje kant representerar en "match". Varje rad i filen blir alltså en kant.
+
+Vi kom fram till att det är ungefär:
+	64 miljoner kanter
+	9 miljoner contigs (betyder detta 9 miljoner kopplade grafer?)
+	Antalet noder måste alltså ligga någonstans på detta intervall, troligen i mitten någonstans.
+
+Vi skapade även ett histogram, för att se hur stora grannmängder noderna hade. Det ser ut som att det är väldigt många noder som har väldigt få grannar.
+Kan bero på gles data? Dock är det ett fåtal noder som har väldigt många grannar. Det är såklar mycket troligt att det finns en stark korrelation mellan
+(längd av sträng - antal grannar). Kanske kan göra en scatterplot för att undersöka?
+
+Senare testade jag grafklassen från labb 6 för detta projekt. Det var några ändringar som behövde göras för att ta hänsyn till storleken av datamängden.
+Detta bestod mest av att ändra så att grannmängden sparas som ett dictionary istället för en lista, för att tillåta snabbare kontroll av huruvida två noder är kopplade eller ej.
+
+Jag avslutade med att undersöka hur många disjunkta grafer datamängden innehåller. Skrev två algoritmer som gav två olika svar, hann inte undersöka vilken som stämde.
+
+Tror att detta borde stämma: bland de första 100 000 raderna fann jag 10529 disjukta grafer.
+
+
+2017_05_18
+
+Lyckades lösa metoden för att räkna antalet disjunkta delgrafer i ett grafobjekt. Var bara några småbuggar som behöve redas ut.
+Metoden är faktiskt ganska snabb, Den sparar alla noder och kanter, sedan hittar den antalet delgrafer destruktivt (vilket är vad som gör den snabb), för att sedan återställa trädet till sitt ursprungsstadie.
+
+Implementerade även graf, nod och kantklasser, samt satte upp projektet i git.
+
+
+2017_05_19
+
+Fortsatte jobba på grafklassen
+
+
+2017_05_22
+
+Jobbade på delgrafsalgoritmen.
+
+
+2017_05_23
+
+Implementerade grundläggande enhetstester för grafklassen.
+
+
+2017_05_24
+
+Totalrenoverade grafklassen. Nu är den väldigt mycket lättare. Jag tog bort nod och båg klasserna, och massor av attribut.
+Det som finns kvar nu är en grafklass som håller reda på namen på noderna, och vilka noder som är kopplade till vilka. För den approachen vi tar kommer denna information att vara tillräcklig.
+
+Ändrade min number_of_csg så att den istället delar upp grafen i sina delgrafer.
+
+Sedan jobbade vi alla med att strukturera upp filstrukturen lite, och sedan började vi testa allt för att se hur det fungerade.
+
+
+2017_05_25
+
+Tog bort en flaskhals i csg_ify. Initieringen av en onödig loop tog väldigt mycket tid. Det enda den användes till var att plocka ut ett element ur ett dictionary, vilket kan åstakommas med .popitem().
+Exprementerade med line_profiler för att analysera hur lång tid scriptet spenderar på varje rad.
+Städade upp väldigt mycket i projektmapparna.
+
+2017_05_26
+
+Fortsatte optimera csg_ify och remove.
+Gjorde fler enhetstester, tex för parse och csg_ify.
+Städade upp mer i klassen.

@@ -16,4 +16,4 @@ with open(str(sys.argv[2]), 'a') as result:
             if line[1] in contig_dict:
                 continue
             else:
-                result.write(line[0]+'  '+line[1]+'  '+line[2]+'\n')
+                result.write(line[0]+'  '+line[1]+'\n')
