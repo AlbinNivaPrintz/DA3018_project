@@ -7,7 +7,7 @@ extra många grannar (dvs kontriger med låg komplexitet).
 Önskvärt blir att ta bort dessa.
 
 Vi avrundade med att rita ett histogram för hur många ggr varje kontig uppkom,
-och det visade sig att de flesta hade ganska få överlappningar. 
+och det visade sig att de flesta hade ganska få överlappningar.
 
 
 18/5-17
@@ -15,7 +15,7 @@ och det visade sig att de flesta hade ganska få överlappningar.
 Tiden var begränsad för mig denna dag.
 Jag började sätta mig in och försöka fördjupa mig i huruvida vi skulle angripa problemet
 för att sedan fundera ut hur vi ska organisera projektet.
-Albin skapade en repository där jag kunde börja skapa mappar till gruppen.
+Albin skapade en repository där jag kunde börja skapa organisera med mappar till gruppen.
 
 
 19/5-17
@@ -45,7 +45,16 @@ Började felsöka kod och skapa en main så att den fungerar med unix.
 
 26/5-17
 -------
-Började skriva på projektrapporten, provköra programmet och räkna på
+Började skriva på projektrapporten, provköra programmet och fixa småbuggar samt räkna på
 tidskomplexitet för samtliga funktioner.
 
 
+29/5-17
+-------
+Albin hade analyserat vad som tog längst tid så jag försökte kolla
+ifall det fanns något som drog ned på tidskomplexiteten. Samtidigt fortsatte jag
+med rapportering.
+
+1/6-17
+-------
+Vi samlade ihop oss en sista gång för att kolla igenom rapport och kod.
